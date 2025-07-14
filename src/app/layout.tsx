@@ -1,20 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-// ✅ Redux setup
-import { Provider } from "react-redux";
-import { store } from "@/app/lib/store"; // adjust path if needed
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Online Menu",
@@ -28,11 +13,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* ✅ Redux Provider wraps your app */}
-        <Provider store={store}>
+      <body>
           {children}
-        </Provider>
       </body>
     </html>
   );
