@@ -1,0 +1,75 @@
+{
+  "header": {
+    "language_button": "FA 🇮🇷",
+    "language_button_responsive": "FA",
+    "theme_light": "🌞 Light Mode",
+    "theme_dark": "🌙 Dark Mode",
+    "theme_light_responsive": "🌞",
+    "theme_dark_responsive": "🌙",
+    "contact_us": "CONTACT US",
+    "cart": "YOUR CART"
+  },
+  "home": {
+    "title": "Welcome to Our Menu!",
+    "subtitle": "Explore delicious options.",
+    "most_popular": "Most Popular Items"
+  },
+  "categories": {
+    "burger": "Burger",
+    "pizza": "Pizza",
+    "kebab": "Kebab",
+    "appetizer": "Appetizer",
+    "bread": "Bread",
+    "cold_drink": "Cold Drink",
+    "hot_drink": "Hot Drink",
+    "shake": "Shake",
+    "cake": "Cake",
+    "dessert": "Dessert"
+  },
+  "menu": {
+    "popular": "Popular",
+    "add_to_cart": "Add to Cart",
+    "no_popular_items": "No popular items available",
+    "stars_rating": "{{rating}} stars",
+    "prep_time": "Prep Time",
+    "minutes_abbr": "min"
+  },
+  "item_details": {
+    "nutritional_info": "Nutritional Information",
+    "calories": "Calories",
+    "protein": "Protein",
+    "carbs": "Carbohydrates",
+    "fats": "Fats",
+    "allergens": "Allergens",
+    "no_allergens": "None",
+    "serving_suggestions": "Serving Suggestions",
+    "customer_reviews": "Customer Reviews",
+    "no_reviews": "No reviews yet.",
+    "review_by": "by"
+  },
+  "footer": {
+    "restaurant_name": "Delicious Café",
+    "description": "Experience authentic flavors and warm hospitality in our cozy restaurant. We serve fresh, locally-sourced ingredients with love and passion.",
+    "quick_links": "Quick Links",
+    "menu": "Menu",
+    "careers": "Careers",
+    "contact_info": "Contact Info",
+    "address": "123 Main Street, Amsterdam, Netherlands",
+    "phone": "+31 20 123 4567",
+    "email": "info@deliciouscafe.com",
+    "hours": "Opening Hours",
+    "mon_fri": "Mon - Fri",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "newsletter": "Newsletter",
+    "email_placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy"
+  },
+  "errors": {
+    "failed_to_load": "Failed to load data. Please try again."
+  }
+}
