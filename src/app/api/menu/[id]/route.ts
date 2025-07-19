@@ -6,8 +6,22 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  return NextResponse.json(
-    { error: 'Failed to fetch item' },
-    { status: 500 }
-  );
+  try {
+    const id = parseInt(params.id);
+    const item: MenuItem | undefined = getItemById(id);
+    
+    if (!item) {
+      return NextResponse.json(
+        { error: 'Item not found' },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json(item);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to fetch item' },
+      { status: 500 }
+    );
+  }
 }

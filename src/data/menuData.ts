@@ -1,6 +1,4 @@
-// src/data/menuData.ts
-// import { MenuItem } from '@/types/menu'; // <-- OLD LINE
-import { MenuItem } from '@/types/api'; // <-- NEW LINE
+import { MenuItem } from '@/types/api'; 
 
 // Organized by categories
 export const menuByCategory = {
