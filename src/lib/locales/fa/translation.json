@@ -26,13 +26,17 @@
     "cake": "کیک",
     "dessert": "دسر"
   },
+  "category_status": {
+    "no_items": "!بدون آیتم"
+  },
   "menu": {
     "popular": "پرطرفدار",
     "add_to_cart": "افزودن به سبد",
     "no_popular_items": "آیتم پرطرفداری موجود نیست",
     "stars_rating": "{{rating}} ستاره",
     "prep_time": "زمان آماده‌سازی",
-    "minutes_abbr": "دقیقه"
+    "minutes_abbr": "دقیقه",
+    "no_items_for_category": "هیچ آیتمی برای این دسته‌بندی وجود ندارد!"
   },
   "item_details": {
     "nutritional_info": "اطلاعات تغذیه‌ای",
@@ -46,6 +50,19 @@
     "customer_reviews": "نظرات مشتریان",
     "no_reviews": "هنوز نظری ثبت نشده است.",
     "review_by": "توسط"
+  },
+    "modal": {
+    "details": "جزییات",
+    "reviews": "نظرها",
+    "review": "نظر",
+    "add_review": "افزودن نظر",
+    "rating": "امتیاز شما",
+    "name": "نام شما",
+    "comment": "نظر شما",
+    "submit_review": "ثبت نظر",
+    "submitting": "در حال ثبت",
+    "all_reviews": "همه ی نظرها",
+    "no_reviews": "هنوز نظری ثبت نشده!"
   },
   "footer": {
     "restaurant_name": "کافه خوشمزه",

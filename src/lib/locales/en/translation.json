@@ -26,13 +26,17 @@
     "cake": "Cake",
     "dessert": "Dessert"
   },
+  "category_status": {
+    "no_items": "No Items!"
+  },
   "menu": {
     "popular": "Popular",
     "add_to_cart": "Add to Cart",
     "no_popular_items": "No popular items available",
     "stars_rating": "{{rating}} stars",
     "prep_time": "Prep Time",
-    "minutes_abbr": "min"
+    "minutes_abbr": "min",
+    "no_items_for_category": "No items for this category yet!"
   },
   "item_details": {
     "nutritional_info": "Nutritional Information",
@@ -46,6 +50,19 @@
     "customer_reviews": "Customer Reviews",
     "no_reviews": "No reviews yet.",
     "review_by": "by"
+  },
+  "modal": {
+    "details": "Details",
+    "reviews": "Reviews",
+    "review": "Review",
+    "add_review": "Add Review",
+    "rating": "Your Rating",
+    "name": "Your Name",
+    "comment": "Your Comment",
+    "submit_review": "Submit Review",
+    "submitting": "Submitting",
+    "all_reviews": "All Reviews",
+    "no_reviews": "No reviews yet!"
   },
   "footer": {
     "restaurant_name": "Delicious Café",

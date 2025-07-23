@@ -1,7 +1,7 @@
 export interface MenuItem {
   id: number;
-  name: string | { en: string; fa: string; }; 
-  description: string | { en: string; fa: string; }; 
+  name: { en: string; fa: string; }; 
+  description: { en: string; fa: string; }; 
   price: number;
   image: string; 
   isPopular: boolean;

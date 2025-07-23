@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from "react"; // Added useCallback
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { categories } from "@/data/categories";
 import { useSelector, useDispatch } from 'react-redux';
@@ -13,12 +13,18 @@ import i18n from '@/lib/i18n';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Line from '@/components/Line';
+import { useQuery } from '@tanstack/react-query';
+import { fetchCategories, fetchMenuByCategory, fetchPopularMenuByCategory } from '@/api/menu';
 
 // Constants for better maintainability
 const SCROLL_SPEED = 1;
 const SCROLL_INTERVAL = 20; // milliseconds
 
-const Header = () => {
+interface HeaderProps {
+  showOnlyPopular?: boolean;
+}
+
+const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   const hasMounted = useHasMounted();
   const dispatch = useDispatch();
   const language = useSelector((state: RootState) => state.language.language);
@@ -32,9 +38,73 @@ const Header = () => {
   // Mobile categories scroll logic
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const directionRef = useRef(1);
-  const intervalIdRef = useRef<NodeJS.Timeout | null>(null); // NEW: Ref to store interval ID
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Removed setShouldAutoScroll here as it's no longer directly controlling the interval
+  // Fetch categories to check which ones have items
+  const { data: apiCategories, isLoading: isLoadingApiCategories, error: apiCategoriesError } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
+  // Fetch items for each category to determine which are empty
+  const { data: categoriesWithItems, isLoading: isLoadingCategoriesWithItems, error: categoriesWithItemsError } = useQuery({
+    queryKey: ['categoriesWithItems', showOnlyPopular, apiCategories],
+    queryFn: async () => {
+      if (!apiCategories || apiCategories.length === 0) {
+        return new Set<string>();
+      }
+
+      const categoriesWithItemsSet = new Set<string>();
+
+      await Promise.all(
+        apiCategories.map(async (category) => {
+          try {
+            const items = showOnlyPopular
+              ? await fetchPopularMenuByCategory(category)
+              : await fetchMenuByCategory(category);
+
+            if (Array.isArray(items) && items.length > 0) {
+              categoriesWithItemsSet.add(category);
+            }
+          } catch (error) {
+            console.error(`Failed to fetch ${category} items:`, error);
+          }
+        })
+      );
+      return categoriesWithItemsSet;
+    },
+    enabled: !!apiCategories && apiCategories.length > 0 && !isLoadingApiCategories,
+  });
+
+  // Function to scroll to category section with improved reliability
+  const scrollToCategory = (categoryKey: string) => {
+    const hasItems = categoriesWithItems?.has(categoryKey) ?? false;
+    const isCategoryTrulyEmpty = !isLoadingCategoriesWithItems && !hasItems;
+
+    if (isCategoryTrulyEmpty) {
+      return;
+    }
+
+    handleMouseEnter();
+
+    const attemptScroll = (retries = 0) => {
+      const categoryElement = document.getElementById(`category-${categoryKey}`);
+
+      if (categoryElement) {
+        const headerHeight = 200;
+        const elementPosition = categoryElement.offsetTop - headerHeight;
+
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        });
+      } else if (retries < 10) {
+        setTimeout(() => attemptScroll(retries + 1), 100);
+      }
+    };
+
+    attemptScroll();
+  };
 
   // Sync Redux with cookie on mount (only runs once)
   useEffect(() => {
@@ -53,18 +123,17 @@ const Header = () => {
   }, [language]);
 
   // Helper function to start the auto-scroll interval
-  // Wrapped in useCallback to prevent unnecessary re-creation
   const startAutoScroll = useCallback(() => {
+    if (window.innerWidth >= 1024) return;
+
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
-    // Clear any existing interval to prevent multiple intervals running
     if (intervalIdRef.current) {
       clearInterval(intervalIdRef.current);
     }
 
     intervalIdRef.current = setInterval(() => {
-      // Re-check scrollContainer inside interval for safety if component unmounts quickly
       if (!scrollContainer) {
         if (intervalIdRef.current) clearInterval(intervalIdRef.current);
         return;
@@ -81,38 +150,37 @@ const Header = () => {
         directionRef.current = 1;
       }
     }, SCROLL_INTERVAL);
-  }, [language]); // Depend on language if scroll behavior could change with it
+  }, [language]);
 
-  // Initialize auto-scroll after component has mounted (NEW LOGIC)
+  // Initialize auto-scroll after component has mounted and clean up
   useEffect(() => {
     if (hasMounted) {
-      // Small delay to ensure DOM is fully ready
       const timer = setTimeout(() => {
-        startAutoScroll(); // Start auto-scroll initially
+        startAutoScroll();
       }, 100);
 
       return () => {
         clearTimeout(timer);
-        // Cleanup: clear the interval when component unmounts
         if (intervalIdRef.current) {
           clearInterval(intervalIdRef.current);
         }
       };
     }
-  }, [hasMounted, startAutoScroll]); // startAutoScroll is a dependency because it's a memoized function
+  }, [hasMounted, startAutoScroll]);
 
-  // Handle mouse enter/leave for auto-scroll control (NEW LOGIC)
+  // Handle mouse enter/leave for auto-scroll control (only on mobile)
   const handleMouseEnter = () => {
+    if (window.innerWidth >= 1024) return;
     if (intervalIdRef.current) {
-      clearInterval(intervalIdRef.current); // Stop the auto-scroll
-      intervalIdRef.current = null; // Clear the ref, indicating no interval is running
+      clearInterval(intervalIdRef.current);
+      intervalIdRef.current = null;
     }
   };
 
   const handleMouseLeave = () => {
-    // Only restart if it's currently stopped (i.e., intervalIdRef.current is null)
+    if (window.innerWidth >= 1024) return;
     if (!intervalIdRef.current) {
-      startAutoScroll(); // Resume auto-scroll
+      startAutoScroll();
     }
   };
 
@@ -133,30 +201,67 @@ const Header = () => {
   const buttonBaseStyles = `h-fit py-2 px-4 rounded-2xl bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`;
   const mobileButtonStyles = `min-w-9 h-fit py-2 px-0 text-xs font-bold rounded-xl bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`;
 
-  const CategoryItem = ({ category }: { category: typeof categories[0] }) => (
-    <button
-      key={category.id}
-      className="flex flex-col items-center group cursor-pointer bg-transparent border-none"
-    >
-      <div className="relative w-[70px] h-[70px]">
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-red-500 to-pink-500 p-[2px]">
-          <div className={`w-full h-full rounded-full flex items-center justify-center ${dark ? "bg-green-950" : "bg-lime-50"}`}>
-            <Image
-              src={category.image}
-              alt={t(`categories.${category.key}`)}
-              width={60}
-              height={60}
-              // THIS IS THE LINE THAT NOW WORKS SMOOTHLY!
-              className="rounded-full transition-transform duration-1000 group-hover:rotate-[360deg]"
-            />
+  const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    const hasItems = categoriesWithItems?.has(category.key) ?? false;
+    const isCategoryEmpty = !isLoadingCategoriesWithItems && !hasItems;
+
+    return (
+      <div className="relative flex flex-col items-center">
+        <button
+          onClick={() => scrollToCategory(category.key)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          key={category.id}
+          className={`
+            flex flex-col items-center group
+            bg-transparent border-none
+            cursor-pointer
+            transition-all duration-300
+          `}
+        >
+          <div className="relative w-[70px] h-[70px]">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-red-500 to-pink-500 p-[2px]">
+              <div className={`w-full h-full rounded-full flex items-center justify-center ${dark ? "bg-green-950" : "bg-lime-50"}`}>
+                <Image
+                  src={category.image}
+                  alt={t(`categories.${category.key}`)}
+                  width={60}
+                  height={60}
+                  className={`
+                    rounded-full
+                    transition-transform duration-1000
+                    transition-filter ease-in-out
+                    ${isHovered ? 'rotate-[360deg]' : ''}
+                    ${isCategoryEmpty ? 'grayscale' : ''}
+                  `}
+                />
+                {/* Conditionally render "No Items!" text */}
+                {isCategoryEmpty && (
+                  <span
+                    className={`
+                      absolute
+                      top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                      text-red-500 ${!isFarsi ?'text-xs' : 'text-sm'} font-black whitespace-nowrap
+                      transform -rotate-12
+                      pointer-events-none 
+                      ${fontClass}
+                    `}
+                  >
+                    {t('category_status.no_items')}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+          <span className={`mt-2 text-center text-sm font-medium ${dark ? 'text-[#ffc903]' : 'text-[#6d5500]'} ${fontClass}`}>
+            {t(`categories.${category.key}`)}
+          </span>
+        </button>
       </div>
-      <span className={`mt-2 text-center text-sm font-medium ${dark ? 'text-[#ffc903]' : 'text-[#6d5500]'} ${fontClass}`}>
-        {t(`categories.${category.key}`)}
-      </span>
-    </button>
-  );
+    );
+  };
 
   return (
     <>
@@ -239,7 +344,6 @@ const Header = () => {
             <div
               className="categories_container w-full overflow-x-auto scrollbar-hide"
               ref={scrollRef}
-              // RE-ADDED THESE LINES: They now safely control auto-scroll
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               style={{

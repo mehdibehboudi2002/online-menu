@@ -1,26 +1,132 @@
 @import "tailwindcss";
+@import "../styles/main.scss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Base font styles */
+body {
+  font-family: cursive; /* Default English cursive */
+  transition: all 0.3s ease;
+  overflow-x: hidden;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.shadow_inner_strong {
+  box-shadow: inset 0 2px 6px 0 rgba(0, 0, 0, 0.15);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* English cursive font class */
+.font-cursive {
+  font-family: cursive;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+/* Farsi chalkboard font class */
+.font-farsi-chalkboard {
+  font-family: "Nazanin", "Tahoma", "Iranian Sans", "B Nazanin", cursive !important;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  line-height: 1.8;
+}
+
+/* Enhanced chalkboard styling for headings */
+.font-cursive h1,
+.font-cursive h2,
+.font-cursive h3,
+.font-cursive h4,
+.font-cursive h5,
+.font-cursive h6 {
+  font-family: cursive;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.font-farsi-chalkboard h1,
+.font-farsi-chalkboard h2,
+.font-farsi-chalkboard h3,
+.font-farsi-chalkboard h4,
+.font-farsi-chalkboard h5,
+.font-farsi-chalkboard h6 {
+  font-family: "Nazanin", "Tahoma", "Iranian Sans", "B Nazanin", cursive !important;
+  font-weight: 600;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.1);
+  line-height: 1.6;
+}
+
+/* Dark mode text shadows */
+[data-theme="dark"] .font-cursive,
+.dark .font-cursive {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .font-farsi-chalkboard,
+.dark .font-farsi-chalkboard {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Specific styling for better readability */
+.font-farsi-chalkboard p {
+  line-height: 2;
+  letter-spacing: 0.4px;
+}
+
+.font-cursive p {
+  line-height: 1.7;
+  letter-spacing: 0.2px;
+}
+
+/* Override for specific components if needed */
+.font-farsi-chalkboard .card-title {
+  letter-spacing: 0.3px;
+}
+
+.font-cursive .card-title {
+  letter-spacing: 0.2px;
+}
+
+/* Button font adjustments */
+.font-farsi-chalkboard button {
+  letter-spacing: 0.2px;
+}
+
+.font-cursive button {
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+/* Additional utility classes */
+.leading-relaxed-farsi {
+  line-height: 2.2;
+}
+
+.leading-loose-farsi {
+  line-height: 2.5;
+}
+
+/* Custom scrollbar */
+.custom_scrollbar {
+  scrollbar-color: var(--scrollbar-thumb-color) transparent;
+  &::-webkit-scrollbar {
+    width: 7px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Dark Mode Scrollbar */
+.dark_mode_scrollbar {
+  &::-webkit-scrollbar {
+    background-color: #1d293d;
+  }
+}
+
+.dark_mode_scrollbar::-webkit-scrollbar-thumb {
+  background-color: #facc15;
+}
+
+/* Light Mode Scrollbar */
+.light_mode_scrollbar {
+  &::-webkit-scrollbar {
+    background-color: #fff;
+  }
+}
+
+.light_mode_scrollbar::-webkit-scrollbar-thumb {
+  background-color: #059669;
 }
