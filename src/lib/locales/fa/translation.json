@@ -10,9 +10,17 @@
     "cart": "سبد شما"
   },
   "home": {
-    "title": "به منوی ما خوش آمدید!",
-    "subtitle": "گزینه‌های خوشمزه را بررسی کنید.",
-    "most_popular": "محبوب ترین آیتم‌ها"
+    "title": "خوش آمدید",
+    "subtitle": " مزه ها را با ما را کشف کنید! ",
+    "most_popular": "محبوب‌ترین‌ها",
+    "chalkboard": {
+      "delicious": "#خوشمزه!",
+      "fresh": "#تازه!",
+      "tasty": "#لذیذ!",
+      "great_food": "#غذای خوب!",
+      "great_mood": "#حال خوب!",
+      "enjoy": "#لذت ببرید!"
+    }
   },
   "categories": {
     "burger": "برگر",
@@ -51,7 +59,7 @@
     "no_reviews": "هنوز نظری ثبت نشده است.",
     "review_by": "توسط"
   },
-    "modal": {
+  "modal": {
     "details": "جزییات",
     "reviews": "نظرها",
     "review": "نظر",

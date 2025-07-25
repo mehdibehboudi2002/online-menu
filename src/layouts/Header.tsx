@@ -338,7 +338,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
 
       {/* Sticky Categories Section */}
       <div className={`sticky top-0 z-50 ${fontClass}`} style={{ position: 'sticky' }}>
-        <div className={`${dark ? "bg-green-950" : "bg-lime-50"}`}>
+        <div className={`${dark ? "bg-green-950" : "bg-gradient-to-r from-[#f7fee7] via-green-100 to-[#f7fee7] text-green-950"}`}>
           {/* Categories with Auto-scroll */}
           <div className={`flex justify-between items-center gap-3 p-4`}>
             <div

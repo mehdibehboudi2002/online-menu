@@ -22,23 +22,22 @@ export const metadata: Metadata = {
   description: "A beautifully crafted online menu with Redux & Tailwind",
 };
 
-// ✅ This must be the default export
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const lang = await getCurrentLanguage() as 'en' | 'fa';
-
+  
   return (
     <html lang={lang} dir={lang === "fa" ? "rtl" : "ltr"}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased theme-background`}>
         <div suppressHydrationWarning={true}>
           <Providers initialLanguage={lang}>
             <Header />
             <DirectionManager />
             <QueryProvider>
-            {children}
+              {children}
             </QueryProvider>
           </Providers>
         </div>

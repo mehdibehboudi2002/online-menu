@@ -1,0 +1,14 @@
+/* Define the keyframes for the continuous rotation */
+@keyframes ferris-wheel-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Apply the animation to the class */
+.ferrisWheelSpin {
+  animation: ferris-wheel-spin 40s linear infinite; /* 40 seconds for a full rotation, adjust as desired */
+}

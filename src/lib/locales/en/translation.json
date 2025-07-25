@@ -10,9 +10,17 @@
     "cart": "YOUR CART"
   },
   "home": {
-    "title": "Welcome to Our Menu!",
-    "subtitle": "Explore delicious options.",
-    "most_popular": "Most Popular Items"
+    "title": "Welcome",
+    "subtitle": "Discover flavors with us!",
+    "most_popular": "Most Popular",
+    "chalkboard": {
+      "delicious": "#Delicious!",
+      "fresh": "#Fresh!",
+      "tasty": "#Tasty!",
+      "great_food": "#Great food!",
+      "great_mood": "#Great mood!",
+      "enjoy": "#Enjoy!"
+    }
   },
   "categories": {
     "burger": "Burger",
