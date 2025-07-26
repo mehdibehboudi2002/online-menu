@@ -198,7 +198,7 @@ const FerrisWheelHero: React.FC = () => {
       {/* Central Text Message */}
       <div className={`
         relative z-10 text-center
-        w-[158px] h-[158px] md:w-[184px] md:h-[184px] lg:w-52 lg:h-52
+        size-[158px] md:size[184px] md:size-[184px] lg:size-52
         flex flex-col items-center justify-center
         px-2 md:px-3 lg:px-4 rounded-full shadow-lg
         bg-[#ffcf02]

@@ -198,8 +198,8 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   }
 
   // Extracted button styles for reusability
-  const buttonBaseStyles = `h-fit py-2 px-4 rounded-2xl bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`;
-  const mobileButtonStyles = `min-w-9 h-fit py-2 px-0 text-xs font-bold rounded-xl bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`;
+  const buttonBaseStyles = `min-w-36 min-h-9 rounded-2xl bg-white text-green-950 text-sm border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`;
+  const mobileButtonStyles = `w-[39.2px] h-[39.2px] p-0 text-xs font-bold rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`;
 
   const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -266,12 +266,12 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   return (
     <>
       {/* Non-sticky Header Section */}
-      <div className={fontClass}>
+      <div className={fontClass} dir="ltr">
         {/* Desktop Header */}
         <div className={`hidden lg:flex justify-between items-center gap-3 p-4 bg-green-950`}>
           <button
             onClick={() => dispatch(toggleTheme())}
-            className={`min-w-40 ${buttonBaseStyles}`}
+            className={`${buttonBaseStyles}`}
           >
             {dark ? t('header.theme_light') : t('header.theme_dark')}
           </button>
@@ -296,7 +296,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
 
           <button
             onClick={() => dispatch(toggleLanguage())}
-            className={`min-w-40 ${buttonBaseStyles}`}
+            className={`${buttonBaseStyles}`}
           >
             {t('header.language_button')}
           </button>
