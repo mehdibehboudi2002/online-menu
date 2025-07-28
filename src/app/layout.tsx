@@ -6,6 +6,7 @@ import Header from "../layouts/Header";
 import DirectionManager from "../components/DirectionManager";
 import { getCurrentLanguage } from "../lib/getLanguage";
 import QueryProvider from "@/lib/QueryProvider";
+import Footer from "@/layouts/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const lang = await getCurrentLanguage() as 'en' | 'fa';
-  
+
   return (
     <html lang={lang} dir={lang === "fa" ? "rtl" : "ltr"}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased theme-background`}>
@@ -39,6 +40,7 @@ export default async function RootLayout({
             <QueryProvider>
               {children}
             </QueryProvider>
+            <Footer />
           </Providers>
         </div>
       </body>
