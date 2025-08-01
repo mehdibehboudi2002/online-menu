@@ -5,7 +5,6 @@ import MenuItem from '@/lib/features/home/components/CategorizedMenu/MenuItem';
 import { useTranslation } from 'react-i18next';
 import { searchMenuItems } from '@/api/menu';
 import { MenuItem as MenuItemType } from '@/types/api';
-// Import the ItemModal component
 import ItemModal from '@/lib/features/home/components/CategorizedMenu/ItemModal';
 
 interface SearchModalProps {
@@ -16,7 +15,7 @@ interface SearchModalProps {
 }
 
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, dark }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isVisible, setIsVisible] = useState(false);
@@ -154,7 +153,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
         onClick={handleBackdropClick}
       >
         <div
-          className={`relative transition-all duration-150 ease-out w-full md:w-[90%] mt-10 md:mt-20 ${
+          className={`relative transition-all duration-150 ease-out w-full sm:w-[90%] mt-10 md:mt-20 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
           onClick={(e) => e.stopPropagation()}
@@ -169,7 +168,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
               onKeyDown={handleKeyDown}
               placeholder={t('search.placeholder') || 'Search...'}
               className={`
-                flex-grow outline-none bg-transparent border-none text-xl font-farsi-chalkboard
+                flex-grow outline-none bg-transparent border-none text-sm sm:text-base font-farsi-chalkboard text-center
+                ${i18n.language === 'fa' ? 'sm:text-right' : 'sm:text-left'}
                 ${dark ? 'text-white placeholder-gray-400' : 'text-green-950 placeholder-gray-300'}
               `}
             />
@@ -227,7 +227,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
                 </div>
               ) : searchResults.length > 0 ? (
                 <>
-                  <h3 className={`text-lg font-bold mb-4 ${dark ? 'text-white' : 'text-green-950'}`}>
+                  <h3 className={`text-sm sm:text-base font-bold mb-4 ${dark ? 'text-white' : 'text-green-950'}`}>
                     {t('search.results') || 'Search Results'} ({searchResults.length})
                   </h3>
                   
@@ -264,10 +264,10 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
                   <div className={`text-4xl mb-4 ${dark ? 'text-gray-400' : 'text-gray-300'}`}>
                     🔍
                   </div>
-                  <p className={`text-lg ${dark ? 'text-gray-300' : 'text-gray-300'}`}>
+                  <p className={`text-sm sm:text-base ${dark ? 'text-gray-300' : 'text-gray-300'}`}>
                     {t('search.no_results') || 'No results found'}
                   </p>
-                  <p className={`text-sm mt-2 ${dark ? 'text-gray-400' : 'text-gray-300'}`}>
+                  <p className={`text-xs sm:text-sm mt-2 ${dark ? 'text-gray-400' : 'text-gray-300'}`}>
                     {t('search.try_different') || 'Try searching with different keywords'}
                   </p>
                 </div>
@@ -281,7 +281,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
               <div className={`text-4xl mb-4 ${dark ? 'text-gray-400' : 'text-gray-300'}`}>
                 🍽️
               </div>
-              <p className={`text-lg ${dark ? 'text-gray-400' : 'text-gray-300'}`}>
+              <p className={`text-sm sm:text-base ${dark ? 'text-gray-400' : 'text-gray-300'}`}>
                 {t('search.start_typing') || 'Start typing to search menu items'}
               </p>
             </div>

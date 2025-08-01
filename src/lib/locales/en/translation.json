@@ -72,11 +72,11 @@
     "no_reviews": "No reviews yet!"
   },
   "search": {
-    "placeholder": "Search for your favorite meals",
+    "placeholder": "Search for your favorite meals...",
     "searching": "Finding your perfect meal...",
     "results": "Delicious Discoveries",
     "no_results": "Oops! Nothing matches your taste",
-    "try_different": "Try 'chicken', 'vegetarian', or browse our categories",
+    "try_different": "Try 'chicken', 'pizza', or browse our categories!",
     "start_typing": "Tell us what you're hungry for"
   },
   "footer": {
