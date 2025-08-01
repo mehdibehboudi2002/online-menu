@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import Line from '@/components/Line';
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { footerData } from '@/data/footer';
 
@@ -66,10 +65,10 @@ const Footer = ({ className = '' }: FooterProps) => {
         footerBg: dark ? 'bg-[#032e15]' : 'bg-[#f7fee7]',
         titleColor: dark ? 'text-[#92c8fa]' : 'text-[#032e15]',
         textColor: dark ? 'text-[#92c8fa]' : 'text-[#032e15]',
-        headingColor: dark ? 'text-[#ffc904]' : 'text-[#032e15]',
-        socialBg: dark ? 'bg-[#233045] hover:bg-[#1a2a39] text-[#ffc904]' : 'bg-white hover:bg-[#e0fcea] text-[#032e15]',
+        headingColor: dark ? 'text-[#ffc903]' : 'text-[#032e15]',
+        socialBg: dark ? 'bg-[#233045] hover:bg-[#1a2a39] text-[#ffc903]' : 'bg-white hover:bg-[#e0fcea] text-[#032e15]',
         bottomBg: dark ? 'border-[#1a2a39] bg-[#1a2a39]' : 'border-[#e0fcea] bg-[#e0fcea]',
-        scrollBg: dark ? 'bg-[#ffc904] text-[#032e15] hover:bg-[#008f39]' : 'bg-[#032e15] text-[#ffc904] hover:bg-[#008f39]'
+        scrollBg: dark ? 'bg-[#ffc903] text-[#032e15] hover:bg-[#008f39]' : 'bg-[#032e15] text-[#ffc903] hover:bg-[#008f39]'
     };
 
     // Don't render anything until mounted to prevent hydration mismatch
@@ -86,7 +85,7 @@ const Footer = ({ className = '' }: FooterProps) => {
                             <div className="flex flex-col md:flex-row md:flex-wrap lg:flex-nowrap justify-around">
                                 <div className="md:w-full lg:w-1/4 mb-8 md:mb-13 lg:mb-0 md:px-9 lg:px-0 text-left">
                                     <div className="flex items-center mb-3 flex-row">
-                                        <div className="w-8 h-8 bg-gradient-to-r from-[#ffc904] to-[#008f39] rounded-lg flex items-center justify-center">
+                                        <div className="w-8 h-8 bg-gradient-to-r from-[#ffc903] to-[#008f39] rounded-lg flex items-center justify-center">
                                             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                                             </svg>
@@ -156,7 +155,7 @@ const Footer = ({ className = '' }: FooterProps) => {
                                         <a
                                             key={social.name}
                                             href={social.href}
-                                            className={`group p-2 rounded-full transition-all duration-300 transform hover:scale-110 hover:rotate-12 ${themeClasses.socialBg} shadow-lg hover:shadow-xl ${social.color} border-2 border-transparent hover:border-[#ffc904] hover:border-opacity-50`}
+                                            className={`group p-2 rounded-full transition-all duration-300 transform hover:scale-110 hover:rotate-12 ${themeClasses.socialBg} shadow-lg hover:shadow-xl ${social.color} border-2 border-transparent ${dark ? 'hover:border-[#ffc903]' : 'hover:border-green-500'} hover:border-opacity-50`}
                                             style={{ animationDelay: `${index * 0.1}s` }}
                                         >
                                             <svg className="size-5 transition-transform duration-300 group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24"
@@ -178,7 +177,7 @@ const Footer = ({ className = '' }: FooterProps) => {
                                     <div className={`flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4`}>
                                         {!langClasses.isFarsi ?
                                             <>
-                                                <svg className={`w-3 h-3 text-[#ffc904] ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
@@ -191,7 +190,7 @@ const Footer = ({ className = '' }: FooterProps) => {
                                                 <span className={`text-xs sm:text-sm leading-relaxed ${themeClasses.textColor} opacity-80`}>
                                                     {t('footer.address')}
                                                 </span>
-                                                <svg className={`w-3 h-3 text-[#ffc904] ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
@@ -201,19 +200,19 @@ const Footer = ({ className = '' }: FooterProps) => {
                                     <div className={`flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4`}>
                                         {!langClasses.isFarsi ?
                                             <>
-                                                <svg className={`w-3 h-3 text-[#ffc904] ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                                 </svg>
-                                                <a href={`tel:${footerData.contact.phone}`} className={`text-xs sm:text-sm transition-colors duration-200 hover:text-[#ffc904] ${themeClasses.textColor} opacity-80 hover:opacity-100`}>
+                                                <a href={`tel:${footerData.contact.phone}`} className={`text-xs sm:text-sm transition-colors duration-200 hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100`}>
                                                     {t('footer.phone')}
                                                 </a>
                                             </>
                                             :
                                             <>
-                                                <a href={`tel:${footerData.contact.phone}`} className={`text-xs sm:text-sm transition-colors duration-200 hover:text-[#ffc904] ${themeClasses.textColor} opacity-80 hover:opacity-100`}>
+                                                <a href={`tel:${footerData.contact.phone}`} className={`text-xs sm:text-sm transition-colors duration-200 hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100`}>
                                                     {t('footer.phone')}
                                                 </a>
-                                                <svg className={`w-3 h-3 text-[#ffc904] ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                                 </svg>
                                             </>
@@ -222,19 +221,19 @@ const Footer = ({ className = '' }: FooterProps) => {
                                     <div className={`flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4`}>
                                         {!langClasses.isFarsi ?
                                             <>
-                                                <svg className={`w-3 h-3 text-[#ffc904] ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                                 </svg>
-                                                <a href={`mailto:${footerData.contact.email}`} className={`text-xs sm:text-sm transition-colors duration-200 hover:text-[#ffc904] ${themeClasses.textColor} opacity-80 hover:opacity-100 break-all`}>
+                                                <a href={`mailto:${footerData.contact.email}`} className={`text-xs sm:text-sm transition-colors duration-200 hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100 break-all`}>
                                                     {t('footer.email')}
                                                 </a>
                                             </>
                                             :
                                             <>
-                                                <a href={`mailto:${footerData.contact.email}`} className={`text-xs sm:text-sm transition-colors duration-200 hover:text-[#ffc904] ${themeClasses.textColor} opacity-80 hover:opacity-100 break-all`}>
+                                                <a href={`mailto:${footerData.contact.email}`} className={`text-xs sm:text-sm transition-colors duration-200 hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100 break-all`}>
                                                     {t('footer.email')}
                                                 </a>
-                                                <svg className={`w-3 h-3 text-[#ffc904] ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                                 </svg>
                                             </>
@@ -255,7 +254,7 @@ const Footer = ({ className = '' }: FooterProps) => {
                                                 <span className={`mr-20 md:mr-0 ${themeClasses.textColor} opacity-80`}>
                                                     {t(schedule.dayKey)}
                                                 </span>
-                                                <span className={`text-[#ffc904] font-medium text-xs sm:text-sm`}>
+                                                <span className={`${dark ? "text-[#ffc903]" : "text-green-500"} font-medium text-xs sm:text-sm`}>
                                                     {schedule.hours}
                                                 </span>
                                             </div>
@@ -263,7 +262,7 @@ const Footer = ({ className = '' }: FooterProps) => {
                                         :
                                         footerData.businessHours.fa.map((schedule, index) => (
                                             <div key={index} className={`flex ${langClasses.flexDirection} justify-between mt-4 text-xs`}>
-                                                <span className={`text-[#ffc904] font-medium text-xs`}>
+                                                <span className={`${dark ? "text-[#ffc903]" : "text-green-500"} font-medium text-xs`}>
                                                     {schedule.hours}
                                                 </span>
                                                 <span className={`ml-20 md:mr-0 ${themeClasses.textColor} opacity-80`}>

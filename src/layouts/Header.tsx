@@ -14,7 +14,9 @@ import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Line from '@/components/Line';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCategories, fetchMenuByCategory, fetchPopularMenuByCategory } from '@/api/menu';
+import { fetchCategories, fetchMenuByCategory, fetchPopularMenuByCategory, searchMenuItems } from '@/api/menu';
+import SearchIcon from "@/components/icons/SearchIcon";
+import SearchModal from '../components/SearchModal';
 
 // Constants for better maintainability
 const SCROLL_SPEED = 1;
@@ -30,6 +32,33 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   const language = useSelector((state: RootState) => state.language.language);
   const dark = useSelector((state: RootState) => state.theme.dark);
   const { t } = useTranslation();
+
+  // The state for the search modal
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  // The handler functions for the search modal
+  const handleOpenSearchModal = () => {
+    setIsSearchModalOpen(true);
+  };
+
+  const handleCloseSearchModal = () => {
+    setIsSearchModalOpen(false);
+  };
+
+  const handleSearchSubmit = async (query: string) => {
+    try {
+      // Call the new search API with the query
+      const results = await searchMenuItems(query);
+      console.log('Search results:', results);
+      // You can now use these results to update your UI, e.g.,
+      // by setting a state variable with the search results.
+
+    } catch (error) {
+      console.error('Failed to perform search:', error);
+      // Handle the error appropriately in your UI
+    }
+  };
+
 
   // Determine font class based on language
   const fontClass = language === 'fa' ? 'font-farsi-chalkboard' : 'font-cursive';
@@ -76,7 +105,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
     enabled: !!apiCategories && apiCategories.length > 0 && !isLoadingApiCategories,
   });
 
-  // Function to scroll to category section with improved reliability
+  // Function to scroll to the category section with improved reliability
   const scrollToCategory = (categoryKey: string) => {
     const hasItems = categoriesWithItems?.has(categoryKey) ?? false;
     const isCategoryTrulyEmpty = !isLoadingCategoriesWithItems && !hasItems;
@@ -243,7 +272,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
                     className={`
                       absolute
                       top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                      text-red-500 ${!isFarsi ?'text-xs' : 'text-sm'} font-black whitespace-nowrap
+                      text-red-500 ${!isFarsi ? 'text-xs' : 'text-sm'} font-black whitespace-nowrap
                       transform -rotate-12
                       pointer-events-none 
                       ${fontClass}
@@ -262,6 +291,11 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
       </div>
     );
   };
+
+  // Calculate the middle index for inserting SearchIcon
+  const middleIndex = Math.floor(categories.length / 2);
+  const leftCategories = categories.slice(0, middleIndex);
+  const rightCategories = categories.slice(middleIndex);
 
   return (
     <>
@@ -286,7 +320,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
               alt='logo'
               width={75}
               height={75}
-              className={`rounded-full ${isFarsi && 'mr-8'}`}
+              className={`rounded-full ${isFarsi ? 'mr-11' : 'mr-7'}`}
             />
           </Link>
 
@@ -339,7 +373,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
       {/* Sticky Categories Section */}
       <div className={`sticky top-0 z-50 ${fontClass}`} style={{ position: 'sticky' }}>
         <div className={`${dark ? "bg-green-950" : "bg-gradient-to-r from-[#f7fee7] via-green-100 to-[#f7fee7] text-green-950"}`}>
-          {/* Categories with Auto-scroll */}
+          {/* Categories with Auto-scroll and Centered SearchIcon */}
           <div className={`flex justify-between items-center gap-3 p-4`}>
             <div
               className="categories_container w-full overflow-x-auto scrollbar-hide"
@@ -352,8 +386,29 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
                 direction: 'ltr' // Force LTR for consistent scroll behavior
               }}
             >
-              <div className="categories_wrapper w-full flex justify-between gap-4 min-w-max">
-                {categories.map(category => (
+              <div className="categories_wrapper w-full flex justify-between gap-4 min-w-max items-center">
+                {/* Left side categories */}
+                {leftCategories.map(category => (
+                  <CategoryItem key={category.id} category={category} />
+                ))}
+
+                {/* SearchIcon in the middle */}
+                <div className="hidden md:flex flex-col items-center justify-center">
+                  <div 
+                    className="w-[30px] flex items-center justify-center"
+                    // New onClick handler to open the modal
+                    onClick={handleOpenSearchModal} 
+                  >
+                    <SearchIcon
+                      className="cursor-pointer"
+                      hasBorder={true}
+                      bgColor={"#fff"}
+                    />
+                  </div>
+                </div>
+
+                {/* Right side categories */}
+                {rightCategories.map(category => (
                   <CategoryItem key={category.id} category={category} />
                 ))}
               </div>
@@ -363,6 +418,13 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
 
         <Line width={'100vw'} />
       </div>
+      
+      <SearchModal 
+        isOpen={isSearchModalOpen}
+        onClose={handleCloseSearchModal}
+        onSearch={handleSearchSubmit}
+        dark={dark}
+      />
     </>
   );
 };

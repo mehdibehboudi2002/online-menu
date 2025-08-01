@@ -124,3 +124,15 @@ export async function deleteReview(reviewId: number): Promise<boolean> {
   if (!res.ok) throw new Error(`Failed to delete review: ${res.status} ${res.statusText}`);
   return true;
 }
+
+// Search for menu items
+export async function searchMenuItems(query: string): Promise<MenuItem[]> {
+  const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Failed to perform search: ${res.status} ${res.statusText}`);
+  const data = await res.json();
+  return data || [];
+}

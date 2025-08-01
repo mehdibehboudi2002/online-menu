@@ -20,11 +20,6 @@ export const categories = [
     image: "/images/categories/appetizer.jpg",
   },
   {
-    id: 5,
-    key: "bread",
-    image: "/images/categories/bread.jpg",
-  },
-  {
     id: 6,
     key: "cold_drink",
     image: "/images/categories/cold-drink.avif",
@@ -38,11 +33,6 @@ export const categories = [
     id: 8,
     key: "shake",
     image: "/images/categories/shake.avif",
-  },
-  {
-    id: 9,
-    key: "cake",
-    image: "/images/categories/cake.jpg",
   },
   {
     id: 10,

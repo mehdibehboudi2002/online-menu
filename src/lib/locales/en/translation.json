@@ -6,8 +6,9 @@
     "theme_dark": "🌙 Dark Mode",
     "theme_light_responsive": "🌞",
     "theme_dark_responsive": "🌙",
-    "contact_us": "CONTACT US",
-    "cart": "YOUR CART"
+    "contact_us": "CONTACT INFO",
+    "cart": "YOUR CART",
+    "search_placeholder": "Search..."
   },
   "home": {
     "title": "Welcome",
@@ -27,11 +28,9 @@
     "pizza": "Pizza",
     "kebab": "Kebab",
     "appetizer": "Appetizer",
-    "bread": "Bread",
     "cold_drink": "Cold Drink",
     "hot_drink": "Hot Drink",
     "shake": "Shake",
-    "cake": "Cake",
     "dessert": "Dessert"
   },
   "category_status": {
@@ -71,6 +70,14 @@
     "submitting": "Submitting",
     "all_reviews": "All Reviews",
     "no_reviews": "No reviews yet!"
+  },
+  "search": {
+    "placeholder": "Search for your favorite meals",
+    "searching": "Finding your perfect meal...",
+    "results": "Delicious Discoveries",
+    "no_results": "Oops! Nothing matches your taste",
+    "try_different": "Try 'chicken', 'vegetarian', or browse our categories",
+    "start_typing": "Tell us what you're hungry for"
   },
   "footer": {
     "restaurant_name": "Delicious Café",
