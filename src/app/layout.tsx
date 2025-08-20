@@ -7,6 +7,7 @@ import DirectionManager from "../components/DirectionManager";
 import { getCurrentLanguage } from "../lib/getLanguage";
 import QueryProvider from "@/lib/QueryProvider";
 import Footer from "@/layouts/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default async function RootLayout({
               {children}
             </QueryProvider>
             <Footer />
+            <ScrollToTop />
           </Providers>
         </div>
       </body>

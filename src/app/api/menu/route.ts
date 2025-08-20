@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllMenuItems, getPopularItems } from '@/data/menuData';
+import { getAllMenuItemsFromSupabase, getPopularItemsFromSupabase } from '@/data/menuItemsData';
 import { MenuItem } from '@/types/api';
 
 export async function GET(request: NextRequest) {
@@ -10,9 +10,11 @@ export async function GET(request: NextRequest) {
     let menuItems: MenuItem[];
     
     if (isPopular === 'true') {
-      menuItems = getPopularItems();
+      // Use the async Supabase function
+      menuItems = await getPopularItemsFromSupabase();
     } else {
-      menuItems = getAllMenuItems();
+      // Use the async Supabase function
+      menuItems = await getAllMenuItemsFromSupabase();
     }
     
     return NextResponse.json(menuItems, {
@@ -21,6 +23,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
+    console.error('API Error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch menu' },
       { status: 500 }

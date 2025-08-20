@@ -13,10 +13,13 @@ import i18n from '@/lib/i18n';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Line from '@/components/Line';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchCategories, fetchMenuByCategory, fetchPopularMenuByCategory, searchMenuItems } from '@/api/menu';
 import SearchIcon from "@/components/icons/SearchIcon";
 import SearchModal from '../components/SearchModal';
+import {
+  MdOutlineShoppingBag
+} from 'react-icons/md';
 
 // Constants for better maintainability
 const SCROLL_SPEED = 1;
@@ -32,8 +35,6 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   const language = useSelector((state: RootState) => state.language.language);
   const dark = useSelector((state: RootState) => state.theme.dark);
   const { t } = useTranslation();
-
-  // The state for the search modal
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   // The handler functions for the search modal
@@ -49,16 +50,9 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
     try {
       // Call the new search API with the query
       const results = await searchMenuItems(query);
-      console.log('Search results:', results);
-      // You can now use these results to update your UI, e.g.,
-      // by setting a state variable with the search results.
 
-    } catch (error) {
-      console.error('Failed to perform search:', error);
-      // Handle the error appropriately in your UI
-    }
+    } catch (error) { }
   };
-
 
   // Determine font class based on language
   const fontClass = language === 'fa' ? 'font-farsi-chalkboard' : 'font-cursive';
@@ -70,13 +64,13 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch categories to check which ones have items
-  const { data: apiCategories, isLoading: isLoadingApiCategories, error: apiCategoriesError } = useQuery({
+  const { data: apiCategories, isLoading: isLoadingApiCategories, error: apiCategoriesError, refetch: refetchApiCategories } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
 
   // Fetch items for each category to determine which are empty
-  const { data: categoriesWithItems, isLoading: isLoadingCategoriesWithItems, error: categoriesWithItemsError } = useQuery({
+  const { data: categoriesWithItems, isLoading: isLoadingCategoriesWithItems, error: categoriesWithItemsError, refetch: refetchCategoriesWithItems } = useQuery({
     queryKey: ['categoriesWithItems', showOnlyPopular, apiCategories],
     queryFn: async () => {
       if (!apiCategories || apiCategories.length === 0) {
@@ -213,84 +207,123 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
     }
   };
 
+  // Loading Spinner Component
+  const LoadingSpinner = ({ size = 20, className = "" }: { size?: number; className?: string }) => (
+    <span className={`px-[2px] py-0.5 rounded-full text-xs flex items-center justify-center ${dark ? 'text-blue-200' : 'text-green-700'
+      }`}>
+      <svg className={`animate-spin h-4 w-4 ${dark ? 'text-yellow-400' : 'text-green-600'}`} fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </span>
+  );
+
   // Render fallback during hydration
   if (!hasMounted) {
     return (
-      <div className="animate-pulse">
-        <div className="h-20 bg-green-950"></div>
-        <div className="h-1 bg-gray-300"></div>
-        <div className="h-24 bg-lime-50"></div>
-        <div className="h-1 bg-gray-300"></div>
-        <div className="h-24 bg-lime-50"></div>
+      <div className={`${fontClass}`} dir="ltr">
+        {/* Desktop Header */}
+        <div className={`hidden lg:flex justify-center items-center gap-3 p-4 bg-green-950`}>
+          <Link href={'/'}>
+            <Image
+              src={'/images/logo.jpg'}
+              alt='logo'
+              width={75}
+              height={75}
+              className={`rounded-full`}
+            />
+          </Link>
+        </div>
+
+        {/* Mobile Header */}
+        <div className={`flex lg:hidden justify-center items-center gap-3 p-4 bg-green-950`}>
+          <Link href={'/'}>
+            <Image
+              src={'/images/logo.jpg'}
+              alt='logo'
+              width={45}
+              height={45}
+              className='rounded-full'
+            />
+          </Link>
+        </div>
+
+        <Line width={'100vw'} />
       </div>
     );
   }
 
-  // Extracted button styles for reusability
-  const buttonBaseStyles = `min-w-36 min-h-9 rounded-2xl bg-white text-green-950 text-sm border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`;
-  const mobileButtonStyles = `w-[39.2px] h-[39.2px] p-0 text-xs font-bold rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`;
+const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
+  const [isHovered, setIsHovered] = useState(false);
 
-  const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
-    const [isHovered, setIsHovered] = useState(false);
+  const hasItems = categoriesWithItems?.has(category.key) ?? false;
+  const isCategoryEmpty = !hasItems;
+  const hasError = apiCategoriesError || categoriesWithItemsError;
+  const isLoading = isLoadingApiCategories || isLoadingCategoriesWithItems || apiCategoriesError || categoriesWithItemsError;
 
-    const hasItems = categoriesWithItems?.has(category.key) ?? false;
-    const isCategoryEmpty = !isLoadingCategoriesWithItems && !hasItems;
+  return (
+    <div className="relative flex flex-col items-center">
+      <button
+        onClick={() => scrollToCategory(category.key)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`
+          flex flex-col items-center group
+          bg-transparent border-none
+          cursor-pointer
+          transition-all duration-300
+        `}
+      >
+        <div className="relative w-[70px] h-[70px]">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-red-500 to-pink-500 p-[2px]">
+            <div className={`w-full h-full rounded-full flex items-center justify-center ${dark ? "bg-green-950" : "bg-lime-50"}`}>
+              <Image
+                src={category.image}
+                alt={t(`categories.${category.key}`)}
+                width={60}
+                height={60}
+                className={`
+                  rounded-full
+                  transition-transform duration-1000
+                  transition-filter ease-in-out
+                  ${isHovered && !isLoading && !hasError ? 'rotate-[360deg]' : ''}
+                  ${isCategoryEmpty ? 'grayscale' : ''}
+                  ${isLoading || hasError ? 'opacity-40' : ''}
+                `}
+              />
 
-    return (
-      <div className="relative flex flex-col items-center">
-        <button
-          onClick={() => scrollToCategory(category.key)}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          key={category.id}
-          className={`
-            flex flex-col items-center group
-            bg-transparent border-none
-            cursor-pointer
-            transition-all duration-300
-          `}
-        >
-          <div className="relative w-[70px] h-[70px]">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-red-500 to-pink-500 p-[2px]">
-              <div className={`w-full h-full rounded-full flex items-center justify-center ${dark ? "bg-green-950" : "bg-lime-50"}`}>
-                <Image
-                  src={category.image}
-                  alt={t(`categories.${category.key}`)}
-                  width={60}
-                  height={60}
+              {/* Loading Spinner */}
+              {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <LoadingSpinner size={24} />
+                </div>
+              )}
+
+              {/* Conditionally render "No Items!" text only when not loading and no error */}
+              {isCategoryEmpty && !isLoading && !hasError && (
+                <span
                   className={`
-                    rounded-full
-                    transition-transform duration-1000
-                    transition-filter ease-in-out
-                    ${isHovered ? 'rotate-[360deg]' : ''}
-                    ${isCategoryEmpty ? 'grayscale' : ''}
+                    absolute
+                    top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                    text-red-500 ${!isFarsi ? 'text-xs' : 'text-sm'} font-black whitespace-nowrap
+                    transform -rotate-12
+                    pointer-events-none 
+                    ${fontClass}
                   `}
-                />
-                {/* Conditionally render "No Items!" text */}
-                {isCategoryEmpty && (
-                  <span
-                    className={`
-                      absolute
-                      top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                      text-red-500 ${!isFarsi ? 'text-xs' : 'text-sm'} font-black whitespace-nowrap
-                      transform -rotate-12
-                      pointer-events-none 
-                      ${fontClass}
-                    `}
-                  >
-                    {t('category_status.no_items')}
-                  </span>
-                )}
-              </div>
+                >
+                  {t('category_status.no_items')}
+                </span>
+              )}
             </div>
           </div>
-          <span className={`mt-2 text-center text-sm font-medium ${dark ? 'text-[#ffc903]' : 'text-[#6d5500]'} ${fontClass}`}>
-            {t(`categories.${category.key}`)}
-          </span>
-        </button>
-      </div>
-    );
-  };
+        </div>
+        <span className={`mt-2 text-center text-xs lg:text-sm font-medium ${dark ? 'text-[#ffc903]' : 'text-[#6d5500]'} ${fontClass}`}>
+          {t(`categories.${category.key}`)}
+        </span>
+      </button>
+    </div>
+  );
+};
 
   // Calculate the middle index for inserting SearchIcon
   const middleIndex = Math.floor(categories.length / 2);
@@ -302,47 +335,64 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
       {/* Non-sticky Header Section */}
       <div className={fontClass} dir="ltr">
         {/* Desktop Header */}
-        <div className={`hidden lg:flex justify-between items-center gap-3 p-4 bg-green-950`}>
-          <button
-            onClick={() => dispatch(toggleTheme())}
-            className={`${buttonBaseStyles}`}
-          >
-            {dark ? t('header.theme_light') : t('header.theme_dark')}
-          </button>
+        <div className={`hidden lg:grid grid-cols-3 items-center p-4 bg-green-950`}>
+          {/* Left section */}
+          <div className="flex justify-between items-center gap-3">
+            <button
+              onClick={() => dispatch(toggleTheme())}
+              className={`min-w-36 min-h-9 rounded-2xl bg-white text-green-950 text-sm border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
+            >
+              {dark ? t('header.theme_light') : t('header.theme_dark')}
+            </button>
+            <Link href={'/'} className={`header_link text-blue-200 ${fontClass}`}>
+              {t('header.contact_us')}
+            </Link>
+          </div>
 
-          <Link href={'/'} className={`header_link text-blue-200 ${fontClass}`}>
-            {t('header.contact_us')}
-          </Link>
+          {/* Center section with logo */}
+          <div className="flex justify-center">
+            <Link href={'/'}>
+              <Image
+                src={'/images/logo.jpg'}
+                alt='logo'
+                width={75}
+                height={75}
+                className={`rounded-full`}
+              />
+            </Link>
+          </div>
 
-          <Link href={'/'}>
-            <Image
-              src={'/images/logo.jpg'}
-              alt='logo'
-              width={75}
-              height={75}
-              className={`rounded-full ${isFarsi ? 'mr-11' : 'mr-7'}`}
-            />
-          </Link>
-
-          <Link href={'/'} className={`header_link text-blue-200 mr-3 ${fontClass}`}>
-            {t('header.cart')}
-          </Link>
-
-          <button
-            onClick={() => dispatch(toggleLanguage())}
-            className={`${buttonBaseStyles}`}
-          >
-            {t('header.language_button')}
-          </button>
+          {/* Right section */}
+          <div className="flex justify-between items-center gap-3">
+            <Link href={'/'} className={`header_link text-blue-200 ${fontClass}`}>
+              {t('header.cart')}
+            </Link>
+            <button
+              onClick={() => dispatch(toggleLanguage())}
+              className={`min-w-36 min-h-9 rounded-2xl bg-white text-green-950 text-sm border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
+            >
+              {t('header.language_button')}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Header */}
         <div className={`flex lg:hidden justify-between items-center gap-3 p-4 bg-green-950`}>
-          <p className={`text-white ${fontClass}`}>M</p>
+          <div className="flex lg:hidden flex-col items-center justify-center">
+            <div
+              className="w-[30px] flex items-center justify-center"
+              onClick={handleOpenSearchModal}
+            >
+              <SearchIcon
+                className="cursor-pointer"
+                color="#000"
+              />
+            </div>
+          </div>
 
           <button
             onClick={() => dispatch(toggleTheme())}
-            className={mobileButtonStyles}
+            className={`w-[36.9px] h-[36.9px] p-0 text-xs font-bold rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
           >
             {dark ? t('header.theme_light_responsive') : t('header.theme_dark_responsive')}
           </button>
@@ -351,20 +401,24 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
             <Image
               src={'/images/logo.jpg'}
               alt='logo'
-              width={45}
-              height={45}
+              width={52}
+              height={52}
               className='rounded-full'
             />
           </Link>
 
           <button
             onClick={() => dispatch(toggleLanguage())}
-            className={mobileButtonStyles}
+            className={`w-[36.9px] h-[36.9px] p-0 text-xs font-bold rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
           >
             {t('header.language_button_responsive')}
           </button>
 
-          <p className={`text-white ${fontClass}`}>M</p>
+          <button
+            className={` flex justify-center items-center p-[4.5px] rounded-full bg-white hover:bg-green-50 hover:border-1 transition-all duration-300 cursor-pointer ${fontClass}`}
+          >
+            <MdOutlineShoppingBag size={19} color="#000" />
+          </button>
         </div>
 
         <Line width={'100vw'} />
@@ -373,8 +427,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
       {/* Sticky Categories Section */}
       <div className={`sticky top-0 z-50 ${fontClass}`} style={{ position: 'sticky' }}>
         <div className={`${dark ? "bg-green-950" : "bg-gradient-to-r from-[#f7fee7] via-green-100 to-[#f7fee7] text-green-950"}`}>
-          {/* Categories with Auto-scroll and Centered SearchIcon */}
-          <div className={`flex justify-between items-center gap-3 p-4`}>
+          <div className={`flex justify-center items-center p-4`}>
             <div
               className="categories_container w-full overflow-x-auto scrollbar-hide"
               ref={scrollRef}
@@ -383,43 +436,53 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
               style={{
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
-                direction: 'ltr' // Force LTR for consistent scroll behavior
+                direction: 'ltr'
               }}
             >
-              <div className="categories_wrapper w-full flex justify-between gap-4 min-w-max items-center">
-                {/* Left side categories */}
-                {leftCategories.map(category => (
-                  <CategoryItem key={category.id} category={category} />
-                ))}
+              <div className="w-full hidden lg:inline-flex items-center justify-between flex-nowrap gap-4 min-w-max">
+                {/* Left side */}
+                <div className="flex-1 flex justify-between gap-4 lg:pr-6 xl:pr-23">
+                  {leftCategories.map(category => (
+                    <CategoryItem key={category.id} category={category} />
+                  ))}
+                </div>
 
                 {/* SearchIcon in the middle */}
-                <div className="hidden md:flex flex-col items-center justify-center">
-                  <div 
+                <div className="hidden lg:flex flex-col items-center justify-center">
+                  <div
                     className="w-[30px] flex items-center justify-center"
-                    // New onClick handler to open the modal
-                    onClick={handleOpenSearchModal} 
+                    onClick={handleOpenSearchModal}
                   >
                     <SearchIcon
                       className="cursor-pointer"
                       hasBorder={true}
-                      bgColor={"#fff"}
                     />
                   </div>
                 </div>
 
-                {/* Right side categories */}
-                {rightCategories.map(category => (
-                  <CategoryItem key={category.id} category={category} />
-                ))}
+                {/* Right side */}
+                <div className="flex-1 flex justify-between gap-4 lg:pl-6 xl:pl-23">
+                  {rightCategories.map(category => (
+                    <CategoryItem key={category.id} category={category} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="w-full inline-flex lg:hidden items-center justify-between flex-nowrap gap-4 min-w-max">
+                {/* Left side */}
+                <div className="flex-1 flex justify-between gap-4 lg:pr-6 xl:pr-23">
+                  {categories.map(category => (
+                    <CategoryItem key={category.id} category={category} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-
         <Line width={'100vw'} />
       </div>
-      
-      <SearchModal 
+
+      <SearchModal
         isOpen={isSearchModalOpen}
         onClose={handleCloseSearchModal}
         onSearch={handleSearchSubmit}

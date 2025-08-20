@@ -11,7 +11,10 @@ body {
 /* Theme background classes */
 .theme-background {
   min-height: 100vh;
-  background: var(--bg-gradient, linear-gradient(to right, #f7fee7, #dcfce7, #f7fee7));
+  background: var(
+    --bg-gradient,
+    linear-gradient(to right, #f7fee7, #dcfce7, #f7fee7)
+  );
   color: var(--text-primary, #14532d);
   transition: all 0.3s ease;
 }
@@ -144,4 +147,77 @@ body {
 
 .light_mode_scrollbar::-webkit-scrollbar-thumb {
   background-color: #059669;
+}
+
+/* Custom Button */
+.btn-wrapper {
+  position: relative;
+}
+
+/* Default border - always present */
+.btn-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50px;
+  border: 2px solid rgba(156, 163, 175, 0.3); /* Default subtle border */
+  transition: opacity 0.3s ease-in-out;
+  z-index: 0;
+}
+
+/* Animated border - fades in/out smoothly */
+.btn-wrapper::after {
+  content: "";
+  position: absolute;
+  top: -2.2px;
+  left: -2.2px;
+  right: -2.2px;
+  bottom: -2.2px;
+  border-radius: 50px;
+  border: 4px solid transparent;
+  background: linear-gradient(90deg, #97ffbc, #fd69ba, #b470fd, #86efac);
+  background-size: 250% 250%;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1;
+}
+
+/* When hovering, show animated border and hide default border */
+.btn-wrapper-hover::before {
+  opacity: 0;
+}
+
+.btn-wrapper-hover::after {
+  opacity: 1;
+  animation: rotate-border-colors 2s linear infinite;
+}
+
+@keyframes rotate-border-colors {
+  0% {
+    background-position: 50% 50%;
+  }
+  100% {
+    background-position: 200% 200%;
+  }
+}
+
+.btn-wrapper button {
+  position: relative;
+  z-index: 2;
+}
+
+.modal-scroll-lock {
+  position: fixed;
+  width: 100%;
+  overflow-y: scroll;
+  /* Hide scrollbar but keep the space */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.modal-scroll-lock::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }

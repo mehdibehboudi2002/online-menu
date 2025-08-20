@@ -4,19 +4,15 @@ import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
-
-// Import react-icons
 import {
-  FaPizzaSlice, FaHamburger, FaCoffee, FaIceCream, FaDrumstickBite
+  FaPizzaSlice, FaHamburger, FaIceCream
 } from 'react-icons/fa';
 import {
   MdOutlineLunchDining, MdRestaurantMenu, MdEmojiFoodBeverage
 } from 'react-icons/md';
-
-// Import IconType for the component type
-import { IconType } from 'react-icons'; // Import IconType
-
+import { IconType } from 'react-icons';
 import styles from './FerrisWheelHero.module.css';
+import Pointer from '@/components/icons/Pointer';
 
 interface FerrisWheelImage {
   src: string;
@@ -206,12 +202,13 @@ const FerrisWheelHero: React.FC = () => {
         text-green-950
         ${isFarsi ? 'font-farsi-chalkboard' : 'font-cursive'}
       `}>
-        <h1 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold mb-1 md:mb-2 leading-tight">
+        <h1 className={`text-base md:text-lg lg:text-xl xl:text-2xl font-bold mb-1 md:mb-2 leading-tight`}>
           {t('home.title')}
         </h1>
-        <p className="text-xs md:text-sm lg:text-base font-bold opacity-90 leading-tight">
+        <p className={`${isFarsi ? 'text-[11px]' : 'text-xs'} lg:text-sm ${!isFarsi ? 'lg:text-base' : ''} mb-1 md:mb-2 font-bold opacity-90 leading-tight`}>
           {t('home.subtitle')}
         </p>
+        <Pointer targetId="category-popular" offset={-130} />
       </div>
 
       {/* Ferris Wheel Images Container */}

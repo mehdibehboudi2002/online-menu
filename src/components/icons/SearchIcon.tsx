@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 interface SearchIconProps extends React.SVGProps<SVGSVGElement> {
     size?: string;
     bgColor?: string;
-    iconColor?: string;
+    color?: string; 
+    iconColor?: string; 
     hasBorder?: boolean;
     borderWidth?: number;
     hoverBgColor?: string;
@@ -11,7 +12,8 @@ interface SearchIconProps extends React.SVGProps<SVGSVGElement> {
 
 const SearchIcon: React.FC<SearchIconProps> = ({
     size = "28",
-    bgColor,
+    bgColor = "#fff",
+    color, // New color prop
     iconColor,
     hasBorder = false,
     borderWidth = 6,
@@ -20,11 +22,13 @@ const SearchIcon: React.FC<SearchIconProps> = ({
 }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    const circleGradientId = "searchIconCircleGradient";
-    const handleGradientId = "searchIconHandleGradient";
-    const borderGradientId = "searchIconBorderGradient";
+    // Generate unique IDs for each component instance to avoid conflicts
+    const uniqueId = React.useId();
+    const circleGradientId = `searchIconCircleGradient-${uniqueId}`;
+    const handleGradientId = `searchIconHandleGradient-${uniqueId}`;
+    const borderGradientId = `searchIconBorderGradient-${uniqueId}`;
 
-    const newIconGradient = (
+    const iconGradient = (
         <defs>
             <linearGradient id={circleGradientId} x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" style={{ stopColor: "yellow", stopOpacity: 1 }} />
@@ -44,8 +48,11 @@ const SearchIcon: React.FC<SearchIconProps> = ({
         </defs>
     );
 
-    const circleIconFill = iconColor || `url(#${circleGradientId})`;
-    const handleIconFill = iconColor || `url(#${handleGradientId})`;
+    // Priority: color prop > iconColor prop > gradient (default)
+    const finalIconColor = color || iconColor;
+    const circleIconFill = finalIconColor || `url(#${circleGradientId})`;
+    const handleIconFill = finalIconColor || `url(#${handleGradientId})`;
+    
     const finalBgFill = isHovered ? hoverBgColor : (bgColor || "rgb(25,52,127)");
 
     const borderStroke = hasBorder ? `url(#${borderGradientId})` : "none";
@@ -73,7 +80,7 @@ const SearchIcon: React.FC<SearchIconProps> = ({
             onMouseLeave={() => setIsHovered(false)}
             {...props}
         >
-            {newIconGradient}
+            {iconGradient}
 
             <g style={{
                 stroke: "none",

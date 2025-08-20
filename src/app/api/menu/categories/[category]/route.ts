@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getItemsByCategory, getPopularItemsByCategory } from '@/data/menuData';
+import { getItemsByCategoryFromSupabase } from '@/data/menuItemsData';
 import { MenuItem } from '@/types/api';
 
 export async function GET(
@@ -11,30 +11,22 @@ export async function GET(
     const isPopular = searchParams.get('isPopular');
     const category = params.category;
     
-    let items: MenuItem[] | undefined;
+    const items: MenuItem[] = await getItemsByCategoryFromSupabase(category);
     
-    if (isPopular === 'true') {
-      items = getPopularItemsByCategory(category as any);
-    } else {
-      items = getItemsByCategory(category as any);
-    }
-    
-    // Return empty array instead of 404 when no items found
-    // Only return 404 if the category itself doesn't exist
-    if (!items) {
+    if (!items || items.length === 0) {
       return NextResponse.json(
-        { error: 'Category not found' },
-        { status: 404 }
+        [],
+        { status: 200 }
       );
     }
     
-    // Return empty array if no items in category (this is valid)
     return NextResponse.json(items, {
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
   } catch (error) {
+    console.error('Failed to fetch category items:', error);
     return NextResponse.json(
       { error: 'Failed to fetch category items' },
       { status: 500 }

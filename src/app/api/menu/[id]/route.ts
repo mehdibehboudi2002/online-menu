@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getItemById } from '@/data/menuData';
+import { getItemByIdFromSupabase } from '@/data/menuItemsData';
 import { MenuItem } from '@/types/api';
 
 export async function GET(
@@ -7,8 +7,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(params.id);
-    const item: MenuItem | undefined = getItemById(id);
+    const id = params.id;
+    const item: MenuItem | null = await getItemByIdFromSupabase(id);
     
     if (!item) {
       return NextResponse.json(
@@ -19,6 +19,7 @@ export async function GET(
     
     return NextResponse.json(item);
   } catch (error) {
+    console.error('Failed to fetch item by ID:', error);
     return NextResponse.json(
       { error: 'Failed to fetch item' },
       { status: 500 }
