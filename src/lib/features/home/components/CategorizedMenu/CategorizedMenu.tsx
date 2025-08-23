@@ -188,7 +188,7 @@ export default function CategorizedMenu({
         <>
           <div className={`${className} flex justify-center items-center h-[50vh]`}>
             <div className={`text-center ${fontClass}`}>
-              <div className={`inline-flex items-center px-1 md:px-4 py-2 rounded-lg text-xs md:text-sm ${dark ? 'bg-red-900/20 text-red-400' : 'bg-red-50 text-red-600'}`}>
+              <div className={`inline-flex items-center px-1 md:px-4 py-2 rounded-2xl text-xs md:text-sm ${dark ? 'bg-red-900/20 text-red-400' : 'bg-red-50 text-red-600'}`}>
                 {t('errors.failed_to_load')}
                 <button
                   onClick={handleManualRefresh}
@@ -234,7 +234,7 @@ export default function CategorizedMenu({
 
     return (
       <>
-        <div className={`${className} ${fontClass}`} id="category-popular">
+        <div className={`${className} ${fontClass}`}>
           <div className={`text-center ${isFarsi ? 'font-farsi-chalkboard' : ''} my-6 md:my-8 md:mb-12`}>
             <div className="flex items-center justify-center mb-4 w-full">
               <div className={`h-px flex-1 ${dark ? 'bg-slate-700' : 'bg-green-200'}`}></div>

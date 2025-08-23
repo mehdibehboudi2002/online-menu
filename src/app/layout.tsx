@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import Header from "../layouts/Header";
+import Header from "../layouts/Header/Header";
 import DirectionManager from "../components/DirectionManager";
 import { getCurrentLanguage } from "../lib/getLanguage";
 import QueryProvider from "@/lib/QueryProvider";
-import Footer from "@/layouts/Footer";
+import Footer from "@/layouts/Footer/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 
 const geistSans = Geist({

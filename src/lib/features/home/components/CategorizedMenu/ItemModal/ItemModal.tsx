@@ -205,7 +205,7 @@ export default function ItemModal({
                   </svg>
                 </span>
               ) : (
-                <span className={`px-1.5 py-0.5 rounded-full text-xs ${dark ? 'bg-slate-700 text-blue-200' : 'bg-green-100 text-green-700'
+                <span className={`min-w-5 px-1.5 py-0.5 rounded-full text-xs ${dark ? 'bg-slate-700 text-blue-200' : 'bg-green-100 text-green-700'
                   }`}>
                   {reviews.length}
                 </span>

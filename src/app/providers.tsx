@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import cartReducer from '../lib/features/cartSlice';
 import languageReducer from '../lib/features/languageSlice';
 import themeReducer from '../lib/features/themeSlice';
+import contactReducer from '../lib/features/contactSlice'; // Add this import
 import { RootState } from '@/lib/store';
 import Line from '@/components/Line'; 
 
@@ -61,6 +62,7 @@ export function Providers({ children, initialLanguage }: ProvidersProps) {
       cart: cartReducer,
       language: languageReducer,
       theme: themeReducer,
+      contact: contactReducer, // Add this line
     },
     preloadedState: {
       language: { language: initialLanguage },

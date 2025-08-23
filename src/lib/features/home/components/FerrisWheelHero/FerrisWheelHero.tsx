@@ -19,10 +19,9 @@ interface FerrisWheelImage {
   alt: string;
 }
 
-// Define types for chalkboard elements
 interface ChalkboardTextElement {
   type: 'text';
-  translationKey: string; // Changed from 'content' to 'translationKey'
+  translationKey: string; 
   position: string;
   rotate: string;
   colors: { dark: string; light: string };
@@ -30,10 +29,10 @@ interface ChalkboardTextElement {
 
 interface ChalkboardIconElement {
   type: 'icon';
-  component: IconType; // This will now be explicitly an IconType
+  component: IconType; 
   alt: string;
   position: string;
-  size: string; // Tailwind text size class
+  size: string; 
   rotate: string;
   colors: { dark: string; light: string };
 }
@@ -85,7 +84,6 @@ const MOBILE_CHALKBOARD_ELEMENTS: ChalkboardElement[] = [
   { type: 'icon', component: FaIceCream, alt: 'Dessert Icon', position: 'right-[2%] top-[55%]', size: 'text-xs', rotate: 'rotate-[-8deg]', colors: { dark: 'text-white', light: 'text-gray-600' } },
 ];
 
-
 const FerrisWheelHero: React.FC = () => {
   const { t, i18n } = useTranslation();
   const dark = useSelector((state: RootState) => state.theme.dark);
@@ -116,7 +114,7 @@ const FerrisWheelHero: React.FC = () => {
       ref={heroRef}
       className="relative flex items-center justify-center h-[305px] md:h-[350px] lg:h-[400px] xl:h-[410px] overflow-hidden"
     >
-      {/* Desktop Chalkboard Text and Icons (lg and up) */}
+      {/* Desktop Chalkboard Text and Icons */}
       {CHALKBOARD_ELEMENTS.map((element, index) => (
         <React.Fragment key={`desktop-${index}`}>
           {element.type === 'text' ? (
@@ -138,8 +136,6 @@ const FerrisWheelHero: React.FC = () => {
               {t(element.translationKey)}
             </p>
           ) : (
-            // Render React Icon component directly after ensuring it's an icon type
-            // TypeScript now correctly infers 'element' as ChalkboardIconElement here
             <element.component
               className={`
                 absolute z-0 ${element.size}
@@ -156,7 +152,7 @@ const FerrisWheelHero: React.FC = () => {
         </React.Fragment>
       ))}
 
-      {/* Mobile Chalkboard Text and Icons (below lg) */}
+      {/* Mobile Chalkboard Text and Icons */}
       {MOBILE_CHALKBOARD_ELEMENTS.map((element, index) => (
         <React.Fragment key={`mobile-${index}`}>
           {element.type === 'text' ? (
@@ -194,7 +190,7 @@ const FerrisWheelHero: React.FC = () => {
       {/* Central Text Message */}
       <div className={`
         relative z-10 text-center
-        size-[158px] md:size[184px] md:size-[184px] lg:size-52
+        size-[158px] md:size-[184px] lg:size-52
         flex flex-col items-center justify-center
         px-2 md:px-3 lg:px-4 rounded-full shadow-lg
         bg-[#ffcf02]
@@ -208,7 +204,7 @@ const FerrisWheelHero: React.FC = () => {
         <p className={`${isFarsi ? 'text-[11px]' : 'text-xs'} lg:text-sm ${!isFarsi ? 'lg:text-base' : ''} mb-1 md:mb-2 font-bold opacity-90 leading-tight`}>
           {t('home.subtitle')}
         </p>
-        <Pointer targetId="category-popular" offset={-130} />
+        <Pointer targetId="home-menu-container" offset={-135} />
       </div>
 
       {/* Ferris Wheel Images Container */}

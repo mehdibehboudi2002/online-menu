@@ -26,7 +26,7 @@ export default function Home() {
         <Line />
 
         {/* All Items Section */}
-        <div className="flex flex-col justify-center items-center">
+        <div id='home-menu-container' className="flex flex-col justify-center items-center">
           <CategorizedMenu className="w-full" showOnlyPopular={true} showLoadingDetails={false} />
           <CategorizedMenu className="w-full" />
         </div>

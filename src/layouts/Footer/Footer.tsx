@@ -4,8 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import Line from '@/components/Line';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { footerData } from '@/data/footer';
+import { useDispatch } from 'react-redux';
+import { resetContactHighlight } from '@/lib/features/contactSlice';
+import type { AppDispatch } from '@/lib/store';
+import styles from './Footer.module.css';
 
 interface FooterProps {
     className?: string;
@@ -16,11 +20,50 @@ const Footer = ({ className = '' }: FooterProps) => {
     const dark = useSelector((state: RootState) => state.theme.dark);
     const reduxLanguage = useSelector((state: RootState) => state.language.language);
     const [mounted, setMounted] = useState(false);
+    const contactSectionRef = useRef<HTMLDivElement>(null);
+    const dispatch = useDispatch<AppDispatch>();
+
+    // Get the contact highlight state from Redux
+    const shouldHighlightContact = useSelector((state: RootState) => state.contact.shouldHighlight);
 
     // Prevent hydration mismatch by not rendering until mounted
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    // Intersection observer to handle highlighting
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    // Check if the contact section is intersecting and if Redux state says to highlight
+                    if (entry.isIntersecting && shouldHighlightContact) {
+                        console.log('Contact section is visible and should highlight!');
+
+                        // Wait for a short time to ensure the animation starts, then reset the Redux state.
+                        setTimeout(() => {
+                            dispatch(resetContactHighlight());
+                        }, 5900); // Highlight duration 
+                    }
+                });
+            },
+            {
+                threshold: 0.1,
+                rootMargin: '0px'
+            }
+        );
+
+        if (contactSectionRef.current) {
+            observer.observe(contactSectionRef.current);
+        }
+
+        // Cleanup function
+        return () => {
+            if (contactSectionRef.current) {
+                observer.unobserve(contactSectionRef.current);
+            }
+        };
+    }, [shouldHighlightContact, dispatch]);
 
     // Use Redux language as source of truth
     const currentLang = reduxLanguage;
@@ -87,7 +130,6 @@ const Footer = ({ className = '' }: FooterProps) => {
                 <div className="max-w-full mx-auto px-4 sm:px-6 md:px-15 lg:px-10 pb-6 md:py-5">
                     <div className="max-w-full mx-auto pt-2 pb-6 md:py-5">
                         <div className="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap justify-between">
-
                             {/* Restaurant Info */}
                             <div className={`md:w-full lg:w-1/4 flex flex-col items-start mb-8 md:mb-13 lg:mb-0 ${langClasses.textAlign}`}>
                                 {!langClasses.isFarsi ?
@@ -102,7 +144,7 @@ const Footer = ({ className = '' }: FooterProps) => {
                                         <h3 className={`text-base font-bold ${themeClasses.titleColor} ${langClasses.marginClass}`}>
                                             {t('footer.restaurant_name')}
                                         </h3>
-                                        <img src="images/logo.jpg" alt="logo" className='size-8 rounded-full' />
+                                        <img src="images/logo.jpg" alt="logo" className='size-9 rounded-full' />
                                     </div>
                                 }
                                 <p className={`${themeClasses.textColor} text-xs sm:text-sm leading-relaxed mb-3 opacity-80`}>
@@ -129,71 +171,119 @@ const Footer = ({ className = '' }: FooterProps) => {
                             </div>
 
                             {/* Contact Information */}
-                            <div className={`mb-8 md:mb-0 ${langClasses.textAlign}`}>
-                                <h4 className={`text-sm sm:text-base font-semibold mb-2 ${themeClasses.headingColor}`}>
+                            <div
+                                id="contact-section"
+                                ref={contactSectionRef}
+                                className={`
+                                    mb-8 md:mb-0 ${langClasses.textAlign} 
+                                    transition-all duration-1000 ease-in-out transform
+                                    ${shouldHighlightContact ? 'drop-shadow-2xl' : ''}
+                                `}
+                            >
+                                <h4 className={`
+                                    text-sm sm:text-base font-semibold mb-2 
+                                    transition-all duration-1000 ease-in-out
+                                    ${shouldHighlightContact
+                                        ? `${dark ? 'text-yellow-300' : 'text-green-600'} animate-pulse`
+                                        : themeClasses.headingColor
+                                    }
+                                    ${shouldHighlightContact ? 'drop-shadow-lg' : ''}
+                                `}
+                                    style={{
+                                        textShadow: shouldHighlightContact
+                                            ? '0 0 10px currentColor, 0 0 20px currentColor'
+                                            : 'none'
+                                    }}
+                                >
                                     {t('footer.contact_info')}
                                 </h4>
+
                                 <div>
-                                    <div className={`flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4`}>
+                                    {/* Address - First item (0s delay) */}
+                                    <div
+                                        className={`
+                                          flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4
+                                          transition-all duration-1000 ease-in-out
+                                          ${shouldHighlightContact ? `animate-pulse ${styles.contactFadeIn1}` : ''}
+                                        `}
+                                    >
                                         {!langClasses.isFarsi ?
                                             <>
-                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`size-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
-                                                <span className={`text-xs sm:text-sm leading-relaxed ${themeClasses.textColor} opacity-80`}>
+                                                <span className={`text-xs sm:text-sm leading-relaxed ${themeClasses.textColor} opacity-80 transition-all duration-1000 ease-in-out`}>
                                                     {t('footer.address')}
                                                 </span>
                                             </>
                                             :
                                             <>
-                                                <span className={`text-xs sm:text-sm leading-relaxed ${themeClasses.textColor} opacity-80`}>
+                                                <span className={`text-xs sm:text-sm leading-relaxed ${themeClasses.textColor} opacity-80 transition-all duration-1000 ease-in-out`}>
                                                     {t('footer.address')}
                                                 </span>
-                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`size-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 616 0z" />
                                                 </svg>
                                             </>
                                         }
                                     </div>
-                                    <div className={`flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4`}>
+
+                                    {/* Phone - Second item (0.4s delay) */}
+                                    <div
+                                        className={`
+                                           flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4
+                                           transition-all duration-1000 ease-in-out
+                                           ${shouldHighlightContact ? `animate-pulse ${styles.contactFadeIn2}` : ''}
+                                       `}
+                                    >
                                         {!langClasses.isFarsi ?
                                             <>
-                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`size-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                                 </svg>
-                                                <a href={`tel:${footerData.contact.phone}`} className={`text-xs sm:text-sm transition-colors duration-300 hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100`}>
+                                                <a href={`tel:${footerData.contact.phone}`} className={`text-xs sm:text-sm transition-all duration-1000 ease-in-out hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100`}>
                                                     {t('footer.phone')}
                                                 </a>
                                             </>
                                             :
                                             <>
-                                                <a href={`tel:${footerData.contact.phone}`} className={`text-xs sm:text-sm transition-colors duration-300 hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100`}>
+                                                <a href={`tel:${footerData.contact.phone}`} className={`text-xs sm:text-sm transition-all duration-1000 ease-in-out hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100`}>
                                                     {t('footer.phone')}
                                                 </a>
-                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`size-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                                 </svg>
                                             </>
                                         }
                                     </div>
-                                    <div className={`flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4`}>
+
+                                    {/* Email - Third item (0.8s delay) */}
+                                    <div
+                                        className={`
+                                            flex items-center ${langClasses.isFarsi ? "justify-end" : "justify-start"} ${langClasses.flexDirection} mt-4
+                                            transition-all duration-1000 ease-in-out
+                                            ${shouldHighlightContact ? `animate-pulse ${styles.contactFadeIn3}` : ''}
+                                        `}
+                                    >
                                         {!langClasses.isFarsi ?
                                             <>
-                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`size-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                                 </svg>
-                                                <a href={`mailto:${footerData.contact.email}`} className={`text-xs sm:text-sm transition-colors duration-300 hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100 break-all`}>
+                                                <a href={`mailto:${footerData.contact.email}`} className={`text-xs sm:text-sm transition-all duration-1000 ease-in-out hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100 break-all`}>
                                                     {t('footer.email')}
                                                 </a>
                                             </>
                                             :
                                             <>
                                                 <a href={`mailto:${footerData.contact.email}`} className={`text-xs sm:text-sm transition-colors duration-300 hover:${dark ? "text-[#ffc903]" : "text-green-500"} ${themeClasses.textColor} opacity-80 hover:opacity-100 break-all`}>
-                                                    {t('footer.email')}
+                                                    <span>
+                                                        {t('footer.email')}
+                                                    </span>
                                                 </a>
-                                                <svg className={`w-3 h-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`size-3 ${dark ? "text-[#ffc903]" : "text-green-500"} ${langClasses.isFarsi ? 'ml-2' : 'mr-2'} flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                                 </svg>
                                             </>

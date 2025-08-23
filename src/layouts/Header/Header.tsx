@@ -8,18 +8,20 @@ import { RootState } from '@/lib/store';
 import { toggleLanguage, setLanguage } from '@/lib/features/languageSlice';
 import { toggleTheme } from '@/lib/features/themeSlice';
 import { useTranslation } from 'react-i18next';
-import useHasMounted from '../hooks/useHasMounted';
+import useHasMounted from '../../hooks/useHasMounted';
 import i18n from '@/lib/i18n';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Line from '@/components/Line';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchCategories, fetchMenuByCategory, fetchPopularMenuByCategory, searchMenuItems } from '@/api/menu';
 import SearchIcon from "@/components/icons/SearchIcon";
-import SearchModal from '../components/SearchModal';
+import SearchModal from '../../components/SearchModal';
 import {
-  MdOutlineShoppingBag
+  MdOutlineShoppingBag,
+  MdSupportAgent
 } from 'react-icons/md';
+import { triggerContactHighlight } from '@/lib/features/contactSlice';
 
 // Constants for better maintainability
 const SCROLL_SPEED = 1;
@@ -52,6 +54,40 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
       const results = await searchMenuItems(query);
 
     } catch (error) { }
+  };
+
+  // For the desktop contact button
+  const handleDesktopContactClick = () => {
+    // Scroll to contact section
+    const contactSection = document.getElementById('footer'); // It's better to scroll to the footer section with the ID of 'footer'
+    if (contactSection) {
+      contactSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    // Then, dispatch the highlight trigger after a short delay
+    setTimeout(() => {
+      dispatch(triggerContactHighlight());
+    }, 700); // Delay
+  };
+
+  // For the mobile fixed contact button
+  const handleMobileContactClick = () => {
+    // Scroll to contact section
+    const contactSection = document.getElementById('footer'); // It's better to scroll to the footer section with the ID of 'footer'
+    if (contactSection) {
+      contactSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    // Then, dispatch the highlight trigger after a short delay
+    setTimeout(() => {
+      dispatch(triggerContactHighlight());
+    }, 700); // Delay
   };
 
   // Determine font class based on language
@@ -253,36 +289,36 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
     );
   }
 
-const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
+    const [isHovered, setIsHovered] = useState(false);
 
-  const hasItems = categoriesWithItems?.has(category.key) ?? false;
-  const isCategoryEmpty = !hasItems;
-  const hasError = apiCategoriesError || categoriesWithItemsError;
-  const isLoading = isLoadingApiCategories || isLoadingCategoriesWithItems || apiCategoriesError || categoriesWithItemsError;
+    const hasItems = categoriesWithItems?.has(category.key) ?? false;
+    const isCategoryEmpty = !hasItems;
+    const hasError = apiCategoriesError || categoriesWithItemsError;
+    const isLoading = isLoadingApiCategories || isLoadingCategoriesWithItems || apiCategoriesError || categoriesWithItemsError;
 
-  return (
-    <div className="relative flex flex-col items-center">
-      <button
-        onClick={() => scrollToCategory(category.key)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`
+    return (
+      <div className="relative flex flex-col items-center">
+        <button
+          onClick={() => scrollToCategory(category.key)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`
           flex flex-col items-center group
           bg-transparent border-none
           cursor-pointer
           transition-all duration-300
         `}
-      >
-        <div className="relative w-[70px] h-[70px]">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-red-500 to-pink-500 p-[2px]">
-            <div className={`w-full h-full rounded-full flex items-center justify-center ${dark ? "bg-green-950" : "bg-lime-50"}`}>
-              <Image
-                src={category.image}
-                alt={t(`categories.${category.key}`)}
-                width={60}
-                height={60}
-                className={`
+        >
+          <div className="relative w-[70px] h-[70px]">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-red-500 to-pink-500 p-[2px]">
+              <div className={`w-full h-full rounded-full flex items-center justify-center ${dark ? "bg-green-950" : "bg-lime-50"}`}>
+                <Image
+                  src={category.image}
+                  alt={t(`categories.${category.key}`)}
+                  width={60}
+                  height={60}
+                  className={`
                   rounded-full
                   transition-transform duration-1000
                   transition-filter ease-in-out
@@ -290,19 +326,19 @@ const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
                   ${isCategoryEmpty ? 'grayscale' : ''}
                   ${isLoading || hasError ? 'opacity-40' : ''}
                 `}
-              />
+                />
 
-              {/* Loading Spinner */}
-              {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <LoadingSpinner size={24} />
-                </div>
-              )}
+                {/* Loading Spinner */}
+                {isLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <LoadingSpinner size={24} />
+                  </div>
+                )}
 
-              {/* Conditionally render "No Items!" text only when not loading and no error */}
-              {isCategoryEmpty && !isLoading && !hasError && (
-                <span
-                  className={`
+                {/* Conditionally render "No Items!" text only when not loading and no error */}
+                {isCategoryEmpty && !isLoading && !hasError && (
+                  <span
+                    className={`
                     absolute
                     top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
                     text-red-500 ${!isFarsi ? 'text-xs' : 'text-sm'} font-black whitespace-nowrap
@@ -310,20 +346,20 @@ const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
                     pointer-events-none 
                     ${fontClass}
                   `}
-                >
-                  {t('category_status.no_items')}
-                </span>
-              )}
+                  >
+                    {t('category_status.no_items')}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-        <span className={`mt-2 text-center text-xs lg:text-sm font-medium ${dark ? 'text-[#ffc903]' : 'text-[#6d5500]'} ${fontClass}`}>
-          {t(`categories.${category.key}`)}
-        </span>
-      </button>
-    </div>
-  );
-};
+          <span className={`mt-2 text-center text-xs lg:text-sm font-medium ${dark ? 'text-[#ffc903]' : 'text-[#6d5500]'} ${fontClass}`}>
+            {t(`categories.${category.key}`)}
+          </span>
+        </button>
+      </div>
+    );
+  };
 
   // Calculate the middle index for inserting SearchIcon
   const middleIndex = Math.floor(categories.length / 2);
@@ -344,9 +380,12 @@ const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
             >
               {dark ? t('header.theme_light') : t('header.theme_dark')}
             </button>
-            <Link href={'/'} className={`header_link text-blue-200 ${fontClass}`}>
+            <button
+              onClick={handleDesktopContactClick}
+              className={`header_link text-blue-200 ${fontClass} bg-transparent border-none cursor-pointer`}
+            >
               {t('header.contact_us')}
-            </Link>
+            </button>
           </div>
 
           {/* Center section with logo */}
@@ -481,6 +520,26 @@ const CategoryItem = ({ category }: { category: typeof categories[0] }) => {
         </div>
         <Line width={'100vw'} />
       </div>
+
+      {/* Mobile Fixed Contact Button */}
+      <button
+        onClick={handleMobileContactClick}
+        className={`
+        size-[46px] md:size-12 fixed lg:hidden bottom-4 left-4 md:bottom-7 md:left-7 z-50
+        rounded-full 
+        ${dark
+            ? 'bg-[#ffc903] text-[#032e15] hover:bg-[#008f39]'
+            : 'bg-[#032e15] text-[#ffc903] hover:bg-[#008f39]'
+          }
+        shadow-lg 
+        transition-all duration-300
+        flex items-center justify-center
+        animate-pulse hover:animate-none
+      `}
+        aria-label={t('footer.contact_info')}
+      >
+        <MdSupportAgent size={24} />
+      </button>
 
       <SearchModal
         isOpen={isSearchModalOpen}
