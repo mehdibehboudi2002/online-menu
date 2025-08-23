@@ -1,15 +1,33 @@
 'use client';
 
+import { useInView } from 'react-intersection-observer';
+
 type LineProps = {
     className?: string;
     width?: string;
+    isAnimated?: boolean;
 }
 
-export default function Line({ className, width }: LineProps) {
+export default function Line({ className, width, isAnimated = false }: LineProps) {
     const isCustomWidth = !!width;
 
+    // Call the hook unconditionally at the top level
+    const { ref, inView } = useInView({
+        triggerOnce: true,
+        threshold: 0.1,
+    });
+
+    // Define animation classes based on the inView status and isAnimated prop
+    const animationClasses = isAnimated && !inView
+        ? 'opacity-0 translate-y-4'
+        : 'opacity-100 translate-y-0 transition-all duration-700 ease-out';
+
+    // Conditionally apply the ref only if isAnimated is true
+    const rootRef = isAnimated ? ref : null;
+
     return (
-        <div className={className} style={{ position: 'relative' }}>
+        // Apply the ref and animation classes to the outermost container
+        <div ref={rootRef} className={`${className} ${animationClasses}`} style={{ position: 'relative' }}>
             <svg
                 viewBox="0 0 120 10"
                 style={{

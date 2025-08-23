@@ -6,6 +6,7 @@ import { RootState } from '@/lib/store';
 import { MenuItem as MenuItemType } from '@/types/api';
 import Line from '@/components/Line';
 import Button from '@/components/Button';
+import { useInView } from 'react-intersection-observer';
 
 interface ItemProps {
   item: MenuItemType;
@@ -30,18 +31,39 @@ export default function MenuItem({
   const currentLang = i18n.language as 'en' | 'fa';
   const isFarsi = currentLang === 'fa';
   const fontClass = isFarsi ? 'font-farsi-chalkboard' : 'font-cursive';
-  
-  // Directly access the new price properties
+
   const formattedPrice = isFarsi ? item.price_fa : item.price_en.toLocaleString('en-US');
+
+  // New hooks for each layout to track visibility independently
+  const { ref: mobileRef, inView: mobileInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.15,
+  });
+
+  const { ref: desktopRef, inView: desktopInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.15,
+  });
+
+  // Dynamic classes for mobile animation
+  const mobileAnimationClasses = mobileInView
+    ? 'opacity-100 translate-y-0 transition-all duration-700 ease-out'
+    : 'opacity-0 translate-y-4';
+
+  // Dynamic classes for desktop animation
+  const desktopAnimationClasses = desktopInView
+    ? 'opacity-100 translate-y-0 transition-all duration-700 ease-out'
+    : 'opacity-0 translate-y-4';
 
   return (
     <>
       {/* Mobile Layout */}
       <div
+        ref={mobileRef}
         className={`md:hidden w-full flex items-center p-4 transition-all duration-300 cursor-pointer ${dark
           ? 'bg-slate-800/90 hover:bg-slate-700/90'
           : 'bg-white/95 hover:bg-green-50/80'
-          }`}
+          } ${mobileAnimationClasses}`}
         onClick={() => onItemClick?.(item)}
       >
         <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
@@ -87,12 +109,17 @@ export default function MenuItem({
         </div>
       </div>
 
+      <div className="md:hidden">
+        <Line width={'100vw'} isAnimated={true} />
+      </div>
+
       {/* Desktop Layout */}
       <div
+        ref={desktopRef}
         className={`hidden md:flex flex-col group relative overflow-hidden rounded-2xl shadow-lg transition-all duration-500 transform cursor-pointer h-full ${dark
           ? 'bg-slate-800/90 border border-slate-700 backdrop-blur-sm hover:border-yellow-500'
           : 'bg-white/95 border border-green-200 backdrop-blur-sm hover:border-green-600'
-          }`}
+          } ${desktopAnimationClasses}`}
         onClick={() => onItemClick?.(item)}
       >
         <div className="relative h-56 overflow-hidden">
@@ -149,10 +176,6 @@ export default function MenuItem({
             <Button text={t('menu.add_to_cart')} />
           </div>
         </div>
-      </div>
-
-      <div className="md:hidden">
-        <Line width={'100vw'} />
       </div>
     </>
   );
