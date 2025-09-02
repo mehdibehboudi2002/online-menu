@@ -18,7 +18,7 @@ export interface MenuItem {
   description_fa: string; 
   price_en: number; 
   price_fa: string; 
-  image: string;
+  images: string[];
   is_popular: boolean; 
   category: string;
   rating?: number; 

@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import { MenuItem as MenuItemType, Review, convertToFarsiNumbers, getAllergensInLanguage, unitTranslations } from '@/types/api';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { fetchReviews } from '@/api/menu';
 import Button from '@/components/Button';
 import ReviewsTab from './ReviewsTab';
 import Line from '@/components/Line';
+import GallerySlider from '@/components/GallerySlider';
+import React from 'react';
 
 interface ItemModalProps {
   item: MenuItemType | null;
@@ -18,6 +20,15 @@ interface ItemModalProps {
   getCategoryDisplayName: (category: string) => string;
   showOnlyPopular?: boolean;
 }
+
+const getFullImageUrl = (imagePath: string): string => {
+  const SUPABASE_URL = "https://cyzwgmruoqhdztzcgcmr.supabase.co";
+  const BUCKET_NAME = "public_images";
+
+  const sanitizedPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+    
+  return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${sanitizedPath}`;
+};
 
 export default function ItemModal({
   item,
@@ -37,24 +48,27 @@ export default function ItemModal({
   const [reviewsError, setReviewsError] = useState<string | null>(null);
   const [hasMounted, setHasMounted] = useState(false);
 
+  // New refs for drag detection
+  const modalContentRef = useRef<HTMLDivElement>(null);
+  const draggedRef = useRef(false);
+  const startPosRef = useRef({ x: 0, y: 0 });
+
   const currentLang = i18n.language as 'en' | 'fa';
   const isFarsi = currentLang === 'fa';
 
-  // Calculate average rating
   const averageRating = reviews.length > 0
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
     : 0;
 
-  // Ensure component is hydrated before any operations
+  const itemImages = item ? (item.images || []).map(getFullImageUrl) : [];
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
-  // Fetch reviews for the item using the API service
   const loadReviews = async (itemId: string) => {
     setReviewsLoading(true);
     setReviewsError(null);
-
     try {
       const data = await fetchReviews(itemId);
       setReviews(data);
@@ -65,7 +79,6 @@ export default function ItemModal({
     }
   };
 
-  // Effect to handle background scroll lock
   useEffect(() => {
     if (!hasMounted) return;
 
@@ -82,7 +95,6 @@ export default function ItemModal({
         window.scrollTo(0, parseInt(scrollY) || 0);
       }
     }
-
     return () => {
       if (item) {
         const scrollY = document.body.style.getPropertyValue('--scroll-y');
@@ -98,7 +110,6 @@ export default function ItemModal({
   useEffect(() => {
     if (item) {
       setIsOpen(true);
-      // Fetch reviews when modal opens
       loadReviews(item.id);
     } else {
       setIsOpen(false);
@@ -113,6 +124,12 @@ export default function ItemModal({
       setReviews([]);
       setReviewsError(null);
     }, 300);
+  };
+
+  const handleImageError = (imageUrl: string) => {
+    if (item) {
+      onImageError(item.id);
+    }
   };
 
   const renderStars = (rating: number, isLink?: boolean, onClick?: (event: React.MouseEvent) => void) => {
@@ -139,18 +156,49 @@ export default function ItemModal({
     );
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only track if the click is on the backdrop itself
+    if (modalContentRef.current && !modalContentRef.current.contains(e.target as Node)) {
+      draggedRef.current = false;
+      startPosRef.current = { x: e.clientX, y: e.clientY };
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (e.buttons === 1) { // Check if the left mouse button is held down
+      const distance = Math.sqrt(
+        Math.pow(e.clientX - startPosRef.current.x, 2) +
+        Math.pow(e.clientY - startPosRef.current.y, 2)
+      );
+      if (distance > 10) { // A threshold of 10 pixels to detect a drag
+        draggedRef.current = true;
+      }
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    // Only handle if the mouse up is on the backdrop and no drag was detected
+    if (modalContentRef.current && !modalContentRef.current.contains(e.target as Node)) {
+      if (!draggedRef.current) {
+        handleClose();
+      }
+    }
+  };
+
   if (!item && !isOpen) return null;
 
   return (
     <div
       className={`fixed inset-0 z-[5000] flex items-center justify-center p-3 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 backdrop-blur-sm bg-black/50' : 'opacity-0 pointer-events-none bg-black/0'
         }`}
-      onClick={handleClose}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <div
+        ref={modalContentRef}
         className={`w-full max-w-2xl max-h-[87vh] md:max-h-[90vh] overflow-hidden rounded-2xl transition-all duration-300 ease-in-out transform ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-green-100'
           } ${isOpen ? 'scale-100' : 'scale-95'}`}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="sticky top-0 z-10 border-b border-opacity-20">
@@ -218,34 +266,22 @@ export default function ItemModal({
           } overflow-y-auto max-h-[calc(90vh-120px)]`}>
           {activeTab === 'details' ? (
             <>
-              {/* Image */}
+              {/* Image Gallery */}
               <div className="relative h-64">
-                {!failedImages.has(item?.id || '') ? (
-                  <img
-                    src={item?.image}
-                    alt={isFarsi ? item?.name_fa : item?.name_en}
-                    className="w-full h-full object-cover"
-                    onError={() => onImageError(item?.id || '')}
-                  />
-                ) : (
-                  <div className={`w-full h-full flex items-center justify-center ${dark ? 'bg-gradient-to-br from-slate-700 to-slate-800' : 'bg-gradient-to-br from-green-50 to-green-100'
-                    }`}>
-                    <div className="text-center">
-                      <div className={`w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center ${dark ? 'bg-slate-600' : 'bg-green-200'
-                        }`}>
-                        <svg className={`w-8 h-8 ${dark ? 'text-blue-200' : 'text-green-700'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <p className={`text-sm ${dark ? 'text-blue-200' : 'text-green-600'}`}>No Image</p>
-                    </div>
-                  </div>
-                )}
+                <GallerySlider
+                  images={itemImages}
+                  alt={isFarsi ? item?.name_fa || '' : item?.name_en || ''}
+                  onImageError={handleImageError}
+                  failedImages={failedImages}
+                  dark={dark}
+                  effect="slide"
+                  isModal={true}
+                />
 
                 {/* Badges */}
-                <div className="absolute top-4 right-4 flex gap-2">
+                <div className="absolute top-4 right-4 flex gap-2 z-30">
                   {(item?.is_popular || showOnlyPopular) && (
-                    <div className={`text-xs font-bold px-3 py-1 rounded-full flex items-center shadow-lg ${dark
+                    <div className={`text-xs font-bold px-3 py-1 rounded-full flex items-center shadow-lg backdrop-blur-sm ${dark
                       ? 'bg-gradient-to-r from-yellow-500 to-yellow-400 text-slate-900'
                       : 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-green-900'
                       }`}>
@@ -257,12 +293,11 @@ export default function ItemModal({
                   )}
                 </div>
 
-                {item && <div className="absolute top-4 left-4">
+                {item && <div className="absolute top-4 left-4 z-30">
                   <div className={`px-3 py-1 rounded-full text-sm font-bold backdrop-blur-sm ${dark
                     ? 'bg-slate-900/80 text-yellow-400 border border-yellow-400/30'
                     : 'bg-white/90 text-green-800 border border-green-200'
                     }`}>
-                    {/* Inline the price formatting logic */}
                     {isFarsi ? item.price_fa : item.price_en.toLocaleString('en-US')} {isFarsi ? 'ریال' : 'Rials'}
                   </div>
                 </div>}
@@ -283,8 +318,6 @@ export default function ItemModal({
                       <span className={`text-sm ${dark ? 'text-blue-300' : 'text-green-600'}`}>
                         ({reviews.length} {!isFarsi ? (reviews.length === 1 ? t('modal.review') || 'review' : t('modal.reviews') || 'reviews') : (t('modal.review') || 'review')})
                       </span>
-
-                      {/* Arrow Icon */}
                       <div className={`absolute ${isFarsi ? 'left-4' : 'right-4'} top-1/2 transform -translate-y-1/2 
                       opacity-0 group-hover:opacity-100 
                       transition-all duration-300 ease-in-out
@@ -313,37 +346,31 @@ export default function ItemModal({
                 </div>
                 <Line />
 
-                {/* --- Nutritional Info and Allergens Section --- */}
                 {item && (
                   <div className={`space-y-4 py-4`}>
-                    {/* Nutritional Information */}
                     <div>
                       <h3 className={`text-sm font-semibold mb-2 ${dark ? 'text-[#ffc903]' : 'text-green-950'}`}>
                         {t('item_details.nutritional_info') || 'Nutritional Information'}
                       </h3>
                       <div className={`md:grid grid-cols-3 gap-2 text-[13px] ${dark ? 'text-blue-200' : 'text-green-800'}`}>
-                        {/* Calories */}
                         <div className='flex mt-2 md:mt-1'>
                           <p>{t('item_details.calories') || 'Calories'}:</p>
                           <span className={`${dark ? 'text-blue-100' : 'text-green-700'} ${isFarsi ? 'mr-1' : 'ml-1'}`}>
                             {isFarsi ? convertToFarsiNumbers(item.nutritional_info.calories) : item.nutritional_info.calories} {unitTranslations.kcal[currentLang]}
                           </span>
                         </div>
-                        {/* Protein */}
                         <div className='flex mt-2 md:mt-1'>
                           <p>{t('item_details.protein') || 'Protein'}:</p>
                           <span className={`${dark ? 'text-blue-100' : 'text-green-700'} ${isFarsi ? 'mr-1' : 'ml-1'}`}>
                             {isFarsi ? convertToFarsiNumbers(item.nutritional_info.protein) : item.nutritional_info.protein} {unitTranslations.g[currentLang]}
                           </span>
                         </div>
-                        {/* Carbs */}
                         <div className='flex mt-2 md:mt-1'>
                           <p>{t('item_details.carbs') || 'Carbs'}:</p>
                           <span className={`${dark ? 'text-blue-100' : 'text-green-700'} ${isFarsi ? 'mr-1' : 'ml-1'}`}>
                             {isFarsi ? convertToFarsiNumbers(item.nutritional_info.carbs) : item.nutritional_info.carbs} {unitTranslations.g[currentLang]}
                           </span>
                         </div>
-                        {/* Fats */}
                         <div className='flex mt-2 md:mt-1'>
                           <p>{t('item_details.fats') || 'Fats'}:</p>
                           <span className={`${dark ? 'text-blue-100' : 'text-green-700'} ${isFarsi ? 'mr-1' : 'ml-1'}`}>
@@ -352,7 +379,6 @@ export default function ItemModal({
                         </div>
                       </div>
                     </div>
-                    {/* Allergens */}
                     {item.allergens && item.allergens.length > 0 && (
                       <div>
                         <h3 className={`text-sm font-semibold mb-2 ${dark ? 'text-[#ffc903]' : 'text-green-950'}`}>
@@ -366,20 +392,16 @@ export default function ItemModal({
                   </div>
                 )}
                 <Line />
-                {/* End of the Section */}
-
                 <div className={`flex ${isFarsi ? 'flex-row-reverse' : 'flex-row'} justify-between items-center pt-4`}>
                   <span className={`text-xs px-2 py-1 rounded-full ${dark ? 'bg-slate-700 text-blue-200' : 'bg-green-100 text-green-700'
                     }`}>
                     {item?.category ? getCategoryDisplayName(item.category) : ''}
                   </span>
-
                   <Button text={t('menu.add_to_cart')} />
                 </div>
               </div>
             </>
           ) : (
-            /* Reviews Tab */
             <ReviewsTab
               item={item}
               reviews={reviews}
