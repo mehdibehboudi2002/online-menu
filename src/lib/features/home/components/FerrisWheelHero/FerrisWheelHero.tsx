@@ -21,7 +21,7 @@ interface FerrisWheelImage {
 
 interface ChalkboardTextElement {
   type: 'text';
-  translationKey: string; 
+  translationKey: string;
   position: string;
   rotate: string;
   colors: { dark: string; light: string };
@@ -29,10 +29,10 @@ interface ChalkboardTextElement {
 
 interface ChalkboardIconElement {
   type: 'icon';
-  component: IconType; 
+  component: IconType;
   alt: string;
   position: string;
-  size: string; 
+  size: string;
   rotate: string;
   colors: { dark: string; light: string };
 }
@@ -188,23 +188,30 @@ const FerrisWheelHero: React.FC = () => {
       ))}
 
       {/* Central Text Message */}
-      <div className={`
-        relative z-10 text-center
-        size-[158px] md:size-[184px] lg:size-52
-        flex flex-col items-center justify-center
-        px-2 md:px-3 lg:px-4 rounded-full shadow-lg
-        bg-[#ffcf02]
-        bg-opacity-70
-        text-green-950
-        ${isFarsi ? 'font-farsi-chalkboard' : 'font-cursive'}
-      `}>
+      <div
+        className={`
+          relative z-10 text-center
+          size-[158px] md:size-[184px] lg:size-52
+          flex flex-col items-center justify-center
+          px-2 md:px-3 lg:px-4 rounded-full shadow-lg
+          text-green-950
+          ${isFarsi ? 'font-farsi-chalkboard' : 'font-cursive'}
+        `}
+        style={{
+          backgroundImage: 'url(/images/home/wood-design.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <h1 className={`text-base md:text-lg lg:text-xl xl:text-2xl font-bold mb-1 md:mb-2 leading-tight`}>
           {t('home.title')}
         </h1>
         <p className={`${isFarsi ? 'text-[11px]' : 'text-xs'} lg:text-sm ${!isFarsi ? 'lg:text-base' : ''} mb-1 md:mb-2 font-bold opacity-90 leading-tight`}>
           {t('home.subtitle')}
         </p>
-        <Pointer targetId="home-menu-container" offset={-135} />
+        <Pointer className='block md:hidden' targetId="home-menu-container" offset={-126} />
+        <Pointer className='hidden md:block' targetId="home-menu-container" offset={-130} />
       </div>
 
       {/* Ferris Wheel Images Container */}

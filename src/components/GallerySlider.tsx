@@ -20,7 +20,7 @@ interface GallerySliderProps {
   dark?: boolean;
   effect?: 'slide' | 'fade';
   onGalleryClick?: (event: React.MouseEvent) => void;
-  isModal?: boolean; // Reverted prop name for clarity
+  isModal?: boolean;
 }
 
 export default function GallerySlider({
@@ -32,7 +32,7 @@ export default function GallerySlider({
   dark = false,
   effect = 'slide',
   onGalleryClick,
-  isModal = false // Default to false
+  isModal = false
 }: GallerySliderProps) {
   const swiperRef = useRef<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
@@ -118,8 +118,7 @@ export default function GallerySlider({
           dynamicBullets: true,
           dynamicMainBullets: 3,
         }}
-        className="w-full h-full gallery-swiper group"
-        onSwiper={handleSwiperInit}
+        className={`w-full h-full gallery-swiper group ${isModal ? 'modal-gallery' : ''}`} onSwiper={handleSwiperInit}
         onSlideChange={handleSlideChange}
       >
         {validImages.map((image, index) => (
@@ -142,17 +141,19 @@ export default function GallerySlider({
         <>
           {/* Previous Button */}
           <button
-            className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 size-8 rounded-full backdrop-blur-md transition-all duration-300 flex items-center justify-center 
+            className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 size-7 md:size-8 rounded-full backdrop-blur-md transition-all duration-300 flex items-center justify-center 
               ${navClasses}
-              ${isBeginning ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
-              ${dark ? 'bg-slate-800/90 border border-slate-600 hover:bg-slate-800' : 'bg-white/90 border border-gray-300 hover:bg-white'}
+              ${isBeginning ? 'opacity-30 ' : 'cursor-pointer'}
+              ${dark
+                ? `bg-slate-800/90 border border-slate-600 ${!isBeginning ? 'hover:bg-slate-800' : ''}`
+                : `bg-white/90 border border-gray-300 ${!isBeginning ? 'hover:bg-white' : ''}`}
               `}
             onClick={handlePrevClick}
             disabled={isBeginning}
             aria-label="Previous image"
           >
             <svg
-              className={`w-5 h-5 ${isBeginning ? 'text-gray-400' : (dark ? 'text-yellow-400' : 'text-green-600')}`}
+              className={`size-[19px] ${isBeginning ? 'text-gray-400' : (dark ? 'text-yellow-400' : 'text-green-600')}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -163,17 +164,19 @@ export default function GallerySlider({
 
           {/* Next Button */}
           <button
-            className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 size-8 rounded-full backdrop-blur-md transition-all duration-300 flex items-center justify-center 
+            className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 size-7 md:size-8 rounded-full backdrop-blur-md transition-all duration-300 flex items-center justify-center 
               ${navClasses}
-              ${isEnd ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
-              ${dark ? 'bg-slate-800/90 border border-slate-600 hover:bg-slate-800' : 'bg-white/90 border border-gray-300 hover:bg-white'}
+              ${isEnd ? 'opacity-30 ' : 'cursor-pointer'}
+              ${dark
+                ? `bg-slate-800/90 border border-slate-600 ${!isEnd ? 'hover:bg-slate-800' : ''}`
+                : `bg-white/90 border border-gray-300 ${!isEnd ? 'hover:bg-white' : ''}`}
               `}
             onClick={handleNextClick}
             disabled={isEnd}
             aria-label="Next image"
           >
             <svg
-              className={`size-5 ${isEnd ? 'text-gray-400' : (dark ? 'text-yellow-400' : 'text-green-600')}`}
+              className={`size-[19px] ${isEnd ? 'text-gray-400' : (dark ? 'text-yellow-400' : 'text-green-600')}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -199,8 +202,7 @@ export default function GallerySlider({
             left: 50% !important;
             transform: translateX(-50%) !important;
             position: absolute !important;
-            transition: all 0.3s ease !important; /* Add transition for opacity */
-            
+            transition: all 0.3s ease !important; 
             opacity: 0;
           }
           .gallery-swiper:hover .swiper-pagination {
@@ -246,11 +248,7 @@ export default function GallerySlider({
           }
 
           .gallery-swiper .swiper-pagination-bullet:hover {
-            transform: scale(1.3) !important;
-          }
-
-          .gallery-swiper .swiper-pagination-bullet-active:hover {
-            transform: scale(1.3) !important;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
           }
 
           .gallery-swiper {
@@ -280,13 +278,35 @@ export default function GallerySlider({
 
             .gallery-swiper .swiper-pagination-bullet-active::after {
               background: ${dark ? '#facc15' : '#ffffff'} !important;
-              transform: scale(1.2) !important;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
             }
 
             .gallery-swiper .swiper-pagination-bullet:hover::after {
-              transform: scale(1.3) !important;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
             }
+
+            /* Modal-specific always appeared dots for < lg screens */
+            @media (max-width: 1023px) {
+            .gallery-swiper.modal-gallery .swiper-pagination {
+              opacity: 1 !important;
+            }
+           }
+
+           /* Modal-specific smaller pagination for < md screens */
+           .gallery-swiper.modal-gallery .swiper-pagination {
+             padding: 4.5px 1.5px !important;
+           }
+
+           .gallery-swiper.modal-gallery .swiper-pagination-bullet {
+             margin: 0 4px !important;
+             width: 8px !important;
+             height: 8px !important;
+           }
+
+           .gallery-swiper.modal-gallery .swiper-pagination-bullet::after {
+             width: 7px !important;
+             height: 7px !important;
+           }
           }
         `}</style>
     </div>

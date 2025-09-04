@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
+import { useTranslation } from "react-i18next";
 
 type ButtonProps = {
     icon?: any;
@@ -16,6 +17,10 @@ type ButtonProps = {
 const Button = ({ icon, text, className, bgColor, onClick, disabled = false }: ButtonProps) => {
     const [isMouseOnBtn, setIsMouseOnBtn] = useState<boolean>(false);
     const dark = useSelector((state: RootState) => state.theme.dark);
+    const { i18n } = useTranslation();
+
+    const currentLang = i18n.language as 'en' | 'fa';
+    const isFarsi = currentLang === 'fa';
 
     // Handle disabled state styling
     const backgroundClasses = disabled
@@ -35,7 +40,7 @@ const Button = ({ icon, text, className, bgColor, onClick, disabled = false }: B
     const handleClick = (event: React.MouseEvent) => {
         // Prevent click when disabled
         if (disabled) return;
-        
+
         // Stop the click event from propagating to parent elements
         event.stopPropagation();
         onClick?.(event); // Call the provided onClick handler, if it exists
@@ -61,7 +66,7 @@ const Button = ({ icon, text, className, bgColor, onClick, disabled = false }: B
                 disabled={disabled}
             >
                 {icon}
-                <label className={`bold-14 xl:bold-16 whitespace-nowrap ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>{text}</label>
+                <label className={`whitespace-nowrap ${isFarsi && 'text-sm'} ${!disabled && 'cursor-pointer'}`}>{text}</label>
             </button>
         </div>
     );
