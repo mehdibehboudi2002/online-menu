@@ -129,7 +129,7 @@ export default function MenuItem({
         </div>
 
         <div className={`${isFarsi ? 'mr-2' : 'ml-2'}`}>
-          <svg className={`w-5 h-5 ${dark ? 'text-blue-200' : 'text-green-600'} ${isFarsi ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className={`size-5 ${dark ? 'text-blue-200' : 'text-green-600'} ${isFarsi ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </div>
@@ -178,7 +178,7 @@ export default function MenuItem({
           </div>
         </div>
 
-        <div className="py-6 px-4 flex flex-col flex-grow">
+        <div className="pt-4 pb-6 px-4 flex flex-col flex-grow">
           <div className={`mb-3 ${isFarsi ? 'text-right' : 'text-left'} flex-grow`}>
             <h3 className={`font-bold mb-2 ${dark ? 'text-blue-200' : 'text-green-900'}`}>
               {isFarsi ? item.name_fa : item.name_en}

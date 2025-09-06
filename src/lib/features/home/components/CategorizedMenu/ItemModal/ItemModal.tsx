@@ -197,7 +197,7 @@ export default function ItemModal({
     >
       <div
         ref={modalContentRef}
-        className={`w-full max-w-2xl max-h-[87vh] md:max-h-[90vh] overflow-hidden rounded-2xl transition-all duration-300 ease-in-out transform ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-green-100'
+        className={`w-full max-w-2xl max-h-[86vh] md:max-h-[90vh] overflow-hidden rounded-2xl transition-all duration-300 ease-in-out transform ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-green-100'
           } ${isOpen ? 'scale-100' : 'scale-95'}`}
       >
         {/* Header */}
@@ -338,7 +338,7 @@ export default function ItemModal({
               )}
 
               {/* Details Content */}
-              <div className="py-8 sm:py-5 px-3 sm:px-6">
+              <div className="pt-3 pb-8 px-3 sm:px-6">
                 <div className={`mb-4 ${isFarsi ? 'text-right' : 'text-left'}`}>
                   <p className={`text-base leading-relaxed ${dark ? 'text-blue-100' : 'text-green-700'}`}>
                     {isFarsi ? item?.description_fa : item?.description_en}
