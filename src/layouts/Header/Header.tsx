@@ -301,17 +301,20 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
       <div className="relative flex flex-col items-center">
         <button
           onClick={() => scrollToCategory(category.key)}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseEnter={() => {
+            if (!isCategoryEmpty) {
+              setIsHovered(true);
+            }
+          }} onMouseLeave={() => setIsHovered(false)}
           className={`
           flex flex-col items-center group
           bg-transparent border-none
-          cursor-pointer
           transition-all duration-300
+          ${!isCategoryEmpty && !isLoading && !hasError ? 'cursor-pointer' : ''}
         `}
         >
           <div className="relative w-[70px] h-[70px]">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 via-red-500 to-pink-500 p-[2px]">
+            <div className={`p-[2px] absolute inset-0 rounded-full bg-gradient-to-br ${isCategoryEmpty && !isLoading && !hasError ? 'bg-slate-400' : 'from-yellow-400 via-red-500 to-pink-500'}`}>
               <div className={`w-full h-full rounded-full flex items-center justify-center ${dark ? "bg-green-950" : "bg-lime-50"}`}>
                 <Image
                   src={category.image}
@@ -322,8 +325,8 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
                   rounded-full
                   transition-transform duration-1000
                   transition-filter ease-in-out
-                  ${isHovered && !isLoading && !hasError ? 'rotate-[360deg]' : ''}
-                  ${isCategoryEmpty ? 'grayscale' : ''}
+                  ${isHovered ? 'rotate-[360deg]' : ''}
+                  ${isCategoryEmpty && !isLoading && !hasError ? 'grayscale' : ''}
                   ${isLoading || hasError ? 'opacity-40' : ''}
                 `}
                 />
@@ -336,7 +339,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
                 )}
 
                 {/* Conditionally render "No Items!" text only when not loading and no error */}
-                {isCategoryEmpty && !isLoading && !hasError && (
+                {/* {isCategoryEmpty && !isLoading && !hasError && (
                   <span
                     className={`
                     absolute
@@ -349,11 +352,11 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
                   >
                     {t('category_status.no_items')}
                   </span>
-                )}
+                )} */}
               </div>
             </div>
           </div>
-          <span className={`mt-2 text-center text-xs lg:text-sm font-medium ${dark ? 'text-[#ffc903]' : 'text-[#6d5500]'} ${fontClass}`}>
+          <span className={`mt-2 text-center text-xs lg:text-sm font-medium ${isCategoryEmpty && !isLoading ? 'text-slate-400' : dark ? 'text-[#ffc903]' : 'text-[#6d5500]'} ${fontClass}`}>
             {t(`categories.${category.key}`)}
           </span>
         </button>
