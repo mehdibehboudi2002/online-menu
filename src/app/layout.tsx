@@ -30,7 +30,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const lang = await getCurrentLanguage() as 'en' | 'fa';
-
+  
   return (
     <html lang={lang} dir={lang === "fa" ? "rtl" : "ltr"}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased theme-background`}>

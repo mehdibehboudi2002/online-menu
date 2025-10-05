@@ -4,9 +4,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { categories } from "@/data/categories";
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/lib/store';
-import { toggleLanguage, setLanguage } from '@/lib/features/languageSlice';
-import { toggleTheme } from '@/lib/features/themeSlice';
+import { RootState } from '@/lib/store/store';
+import { selectTotalItemsInCart } from '@/lib/store/selectors';
+import CartModal from '../../components/CartModal';
+import { toggleLanguage, setLanguage } from '@/lib/store/features/languageSlice';
+import { toggleTheme } from '@/lib/store/features/themeSlice';
 import { useTranslation } from 'react-i18next';
 import useHasMounted from '../../hooks/useHasMounted';
 import i18n from '@/lib/i18n';
@@ -21,7 +23,8 @@ import {
   MdOutlineShoppingBag,
   MdSupportAgent
 } from 'react-icons/md';
-import { triggerContactHighlight } from '@/lib/features/contactSlice';
+import { triggerContactHighlight } from '@/lib/store/features/contactSlice';
+import { usePathname } from "next/navigation";
 
 // Constants for better maintainability
 const SCROLL_SPEED = 1;
@@ -38,6 +41,10 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   const dark = useSelector((state: RootState) => state.theme.dark);
   const { t } = useTranslation();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const totalItemsCount = useSelector(selectTotalItemsInCart);
+  const pathname = usePathname();
+  const isPaymentSuccessPage = pathname === '/payment-successful';
 
   // The handler functions for the search modal
   const handleOpenSearchModal = () => {
@@ -71,6 +78,14 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
     setTimeout(() => {
       dispatch(triggerContactHighlight());
     }, 700); // Delay
+  };
+
+  const handleOpenCartModal = () => {
+    setIsCartModalOpen(true);
+  };
+
+  const handleCloseCartModal = () => {
+    setIsCartModalOpen(false);
   };
 
   // For the mobile fixed contact button
@@ -406,9 +421,17 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
 
           {/* Right section */}
           <div className="flex justify-between items-center gap-3">
-            <Link href={'/'} className={`header_link text-blue-200 ${fontClass}`}>
+            <button
+              onClick={handleOpenCartModal}
+              className={`relative header_link text-blue-200 ${fontClass} bg-transparent border-none cursor-pointer`}
+            >
               {t('header.cart')}
-            </Link>
+              {totalItemsCount > 0 && (
+                <span className={`absolute ${isFarsi ? '-top-0.5' : '-top-2.5'} -right-4 size-6 md:size-5 text-[11px] md:text-xs font-bold rounded-full bg-yellow-400 text-slate-900 flex items-center justify-center pointer-events-none`}>
+                  {totalItemsCount}
+                </span>
+              )}
+            </button>
             <button
               onClick={() => dispatch(toggleLanguage())}
               className={`min-w-36 min-h-9 rounded-2xl bg-white text-green-950 text-sm border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
@@ -457,9 +480,15 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
           </button>
 
           <button
-            className={` flex justify-center items-center p-[4.5px] rounded-full bg-white hover:bg-green-50 hover:border-1 transition-all duration-300 cursor-pointer ${fontClass}`}
+            onClick={handleOpenCartModal}
+            className={`relative flex justify-center items-center p-[4.5px] rounded-full bg-white hover:bg-green-50 hover:border-1 transition-all duration-300 cursor-pointer ${fontClass}`}
           >
             <MdOutlineShoppingBag size={19} color="#000" />
+            {totalItemsCount > 0 && ( // Display the count
+              <span className="absolute -top-2 -right-2 size-5 text-[10px] font-bold rounded-full bg-yellow-400 text-slate-900 flex items-center justify-center pointer-events-none">
+                {totalItemsCount}
+              </span>
+            )}
           </button>
         </div>
 
@@ -467,6 +496,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
       </div>
 
       {/* Sticky Categories Section */}
+      {!isPaymentSuccessPage && (
       <div className={`sticky top-0 z-50 ${fontClass}`} style={{ position: 'sticky' }}>
         <div className={`${dark ? "bg-green-950" : "bg-gradient-to-r from-[#f7fee7] via-green-100 to-[#f7fee7] text-green-950"}`}>
           <div className={`flex justify-center items-center p-4`}>
@@ -522,7 +552,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
           </div>
         </div>
         <Line width={'100vw'} />
-      </div>
+      </div>)}
 
       {/* Mobile Fixed Contact Button */}
       <button
@@ -543,6 +573,11 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
       >
         <MdSupportAgent size={24} />
       </button>
+
+      <CartModal
+        isOpen={isCartModalOpen}
+        onClose={handleCloseCartModal}
+      />
 
       <SearchModal
         isOpen={isSearchModalOpen}

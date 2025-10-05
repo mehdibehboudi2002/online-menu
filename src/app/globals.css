@@ -150,12 +150,12 @@ body {
 }
 
 /* Custom Button */
-.btn-wrapper {
+.wrapper {
   position: relative;
 }
 
 /* Default border - always present */
-.btn-wrapper::before {
+.wrapper::before {
   content: "";
   position: absolute;
   top: -2px;
@@ -168,8 +168,8 @@ body {
   z-index: 0;
 }
 
-/* Animated border - fades in/out smoothly */
-.btn-wrapper::after {
+/* Animated border - always has animation, controlled by play-state */
+.wrapper::after {
   content: "";
   position: absolute;
   top: -2.2px;
@@ -183,16 +183,18 @@ body {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   z-index: 1;
+  animation: rotate-border-colors 2s linear infinite;
+  animation-play-state: paused;
 }
 
-/* When hovering, show animated border and hide default border */
-.btn-wrapper-hover::before {
+/* When hovering, show animated border and start animation */
+.wrapper-hover::before {
   opacity: 0;
 }
 
-.btn-wrapper-hover::after {
+.wrapper-hover::after {
   opacity: 1;
-  animation: rotate-border-colors 2s linear infinite;
+  animation-play-state: running;
 }
 
 @keyframes rotate-border-colors {
@@ -204,7 +206,7 @@ body {
   }
 }
 
-.btn-wrapper button {
+.wrapper button {
   position: relative;
   z-index: 2;
 }
@@ -221,4 +223,3 @@ body {
 .modal-scroll-lock::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Opera */
 }
-

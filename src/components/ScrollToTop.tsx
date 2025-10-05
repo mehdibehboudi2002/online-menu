@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import Pointer from "./icons/Pointer";
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { RootState } from '@/lib/store/store';
 
 const ScrollToTop = () => {
     // 1. Call the hook unconditionally.
     const dark = useSelector((state: RootState) => state.theme.dark);
-    
+
     // 2. Use a state variable to track if the component has mounted.
     const [isMounted, setIsMounted] = useState(false);
 
@@ -27,7 +27,7 @@ const ScrollToTop = () => {
             direction={'top'}
             showOnScroll={true}
             isScrollToTop={true}
-            color={pointerColor} 
+            color={pointerColor}
             className={`fixed bottom-4 right-4 md:bottom-7 md:right-7 z-50 ${bgClassName} backdrop-blur-sm rounded-full p-[5px] md:p-1.5 shadow-lg`}
         />
     );

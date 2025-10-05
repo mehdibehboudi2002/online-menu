@@ -3,7 +3,7 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { RootState } from '@/lib/store/store';
 import {
   FaPizzaSlice, FaHamburger, FaIceCream
 } from 'react-icons/fa';

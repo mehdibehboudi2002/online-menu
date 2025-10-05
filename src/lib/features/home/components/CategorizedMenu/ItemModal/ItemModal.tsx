@@ -1,24 +1,28 @@
 'use client';
 
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { RootState } from '@/lib/store/store';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '@/lib/store/features/cartSlice';
 import { MenuItem as MenuItemType, Review, convertToFarsiNumbers, getAllergensInLanguage, unitTranslations } from '@/types/api';
-import { useEffect, useState, useRef } from 'react';
 import { fetchReviews } from '@/api/menu';
 import Button from '@/components/Button';
 import ReviewsTab from './ReviewsTab';
 import Line from '@/components/Line';
 import GallerySlider from '@/components/GallerySlider';
-import React from 'react';
+import { useScrollLock } from '@/hooks/useScrollLock';
+import { AiOutlineClockCircle } from 'react-icons/ai';
 
 interface ItemModalProps {
-  item: MenuItemType | null;
+  item: MenuItemType;
   onClose: () => void;
   onImageError: (itemId: string) => void;
   failedImages: Set<string>;
   getCategoryDisplayName: (category: string) => string;
   showOnlyPopular?: boolean;
+  isInShoppingCart?: boolean;
 }
 
 const getFullImageUrl = (imagePath: string): string => {
@@ -26,7 +30,7 @@ const getFullImageUrl = (imagePath: string): string => {
   const BUCKET_NAME = "public_images";
 
   const sanitizedPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
-    
+
   return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${sanitizedPath}`;
 };
 
@@ -36,10 +40,15 @@ export default function ItemModal({
   onImageError,
   failedImages,
   getCategoryDisplayName,
-  showOnlyPopular = false
+  showOnlyPopular = false,
+  isInShoppingCart = false,
 }: ItemModalProps) {
   const { t, i18n } = useTranslation();
   const dark = useSelector((state: RootState) => state.theme.dark);
+  const dispatch = useDispatch(); // Initialize the dispatch hook
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const itemQuantityInCart = cartItems.find(cartItem => cartItem.id === item.id)?.quantity || 0;
+  console.log(item);
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'reviews'>('details');
@@ -61,10 +70,31 @@ export default function ItemModal({
     : 0;
 
   const itemImages = item ? (item.images || []).map(getFullImageUrl) : [];
+  const handleIncrementQuantity = () => {
+    if (item) {
+      dispatch(addToCart({
+        id: item.id,
+        name_en: item.name_en,
+        name_fa: item.name_fa,
+        price_en: item.price_en,
+        price_fa: item.price_fa,
+        images: item.images,
+        description_en: item.description_en,
+        description_fa: item.description_fa,
+        is_popular: item.is_popular,
+        category: item.category,
+        nutritional_info: item.nutritional_info,
+        allergens: item.allergens
+      }));
+    }
+  };
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  const maxDeliveryTime = cartItems.length > 0
+    ? Math.max(...cartItems.map(item => item.estimated_delivery_time_minutes || 0))
+    : item.estimated_delivery_time_minutes || 0;
+
+  const minEstimate = maxDeliveryTime;
+  const maxEstimate = maxDeliveryTime + 5;
 
   const loadReviews = async (itemId: string) => {
     setReviewsLoading(true);
@@ -80,32 +110,8 @@ export default function ItemModal({
   };
 
   useEffect(() => {
-    if (!hasMounted) return;
-
-    if (item) {
-      const scrollY = window.scrollY;
-      document.body.style.setProperty('--scroll-y', `${scrollY}px`);
-      document.body.classList.add('modal-scroll-lock');
-      document.body.style.top = `-${scrollY}px`;
-    } else {
-      const scrollY = document.body.style.getPropertyValue('--scroll-y');
-      document.body.classList.remove('modal-scroll-lock');
-      document.body.style.top = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY) || 0);
-      }
-    }
-    return () => {
-      if (item) {
-        const scrollY = document.body.style.getPropertyValue('--scroll-y');
-        document.body.classList.remove('modal-scroll-lock');
-        document.body.style.top = '';
-        if (scrollY) {
-          window.scrollTo(0, parseInt(scrollY) || 0);
-        }
-      }
-    };
-  }, [item, hasMounted]);
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     if (item) {
@@ -115,6 +121,8 @@ export default function ItemModal({
       setIsOpen(false);
     }
   }, [item]);
+
+  useScrollLock(isOpen);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -126,7 +134,7 @@ export default function ItemModal({
     }, 300);
   };
 
-  const handleImageError = (imageUrl: string) => {
+  const handleImageError = () => {
     if (item) {
       onImageError(item.id);
     }
@@ -189,7 +197,7 @@ export default function ItemModal({
 
   return (
     <div
-      className={`fixed inset-0 z-[5000] flex items-center justify-center p-3 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 backdrop-blur-sm bg-black/50' : 'opacity-0 pointer-events-none bg-black/0'
+      className={`fixed inset-0 z-[200] flex items-center justify-center p-3 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 backdrop-blur-sm bg-black/50' : 'opacity-0 pointer-events-none bg-black/0'
         }`}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -197,11 +205,11 @@ export default function ItemModal({
     >
       <div
         ref={modalContentRef}
-        className={`w-full max-w-2xl max-h-[86vh] md:max-h-[90vh] overflow-hidden rounded-2xl transition-all duration-300 ease-in-out transform ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-green-100'
+        className={`w-full ${!isInShoppingCart ? 'max-w-2xl max-h-[86vh] md:max-h-[90vh]' : 'md:max-w-[500px] max-h-[69vh] md:max-h-[79vh]'} flex flex-col overflow-hidden rounded-2xl transition-all duration-300 ease-in-out transform ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-green-100'
           } ${isOpen ? 'scale-100' : 'scale-95'}`}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 border-b border-opacity-20">
+        <div className={`sticky top-0 z-40 border-b border-opacity-20 ${dark ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="flex items-center justify-between p-4 pt-3">
             <h2 className={`text-[17px] md:text-xl font-bold ${dark ? 'text-blue-200' : 'text-green-900'}`}>
               {isFarsi ? item?.name_fa : item?.name_en}
@@ -211,7 +219,7 @@ export default function ItemModal({
               className={`p-2 rounded-full transition-colors duration-300 cursor-pointer ${dark ? 'hover:bg-slate-700 text-blue-200' : 'hover:bg-green-100 text-green-600'
                 }`}
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -228,7 +236,7 @@ export default function ItemModal({
                 : dark
                   ? 'border-b-2 border-slate-700 text-blue-200 hover:bg-slate-900/50'
                   : 'border-b-2 border-white text-green-700 hover:bg-green-50'
-                } cursor-pointer outline-none`}
+                } ${activeTab !== 'details' && 'cursor-pointer'} outline-none`}
             >
               {t('modal.details') || 'Details'}
             </button>
@@ -241,7 +249,7 @@ export default function ItemModal({
                 : dark
                   ? 'border-b-2 border-slate-700 text-blue-200 hover:bg-slate-900/50'
                   : 'border-b-2 border-white text-green-700 hover:bg-green-50'
-                } cursor-pointer outline-none`}
+                } ${activeTab !== 'reviews' && 'cursor-pointer'} outline-none`}
             >
               {t('modal.reviews') || 'Reviews'}
               {reviewsLoading ? (
@@ -262,8 +270,7 @@ export default function ItemModal({
           </div>
         </div>
 
-        <div className={`custom_scrollbar overflow-x-hidden ${dark ? 'dark_mode_scrollbar' : 'light_mode_scrollbar'
-          } overflow-y-auto max-h-[calc(90vh-120px)]`}>
+        <div className={`custom_scrollbar flex-1 overflow-y-auto overflow-x-hidden ${dark ? 'dark_mode_scrollbar' : 'light_mode_scrollbar'}`}>
           {activeTab === 'details' ? (
             <>
               {/* Image Gallery */}
@@ -279,7 +286,7 @@ export default function ItemModal({
                 />
 
                 {/* Badges */}
-                <div className="absolute top-4 right-4 flex gap-2 z-30">
+                <div className="absolute top-3 right-3 flex gap-2 z-30">
                   {(item?.is_popular || showOnlyPopular) && (
                     <div className={`text-xs font-bold px-3 py-1 rounded-full flex items-center shadow-lg backdrop-blur-sm ${dark
                       ? 'bg-gradient-to-r from-yellow-500 to-yellow-400 text-slate-900'
@@ -293,14 +300,21 @@ export default function ItemModal({
                   )}
                 </div>
 
-                {item && <div className="absolute top-4 left-4 z-30">
-                  <div className={`px-3 py-1 rounded-full text-sm font-bold backdrop-blur-sm ${dark
-                    ? 'bg-slate-900/80 text-yellow-400 border border-yellow-400/30'
-                    : 'bg-white/90 text-green-800 border border-green-200'
-                    }`}>
+                {item && <div className="absolute top-3 left-3 z-30">
+                  <div className={`px-2 py-0.5 rounded-full text-[13px] font-bold backdrop-blur-sm ${dark ? 'bg-slate-900/80 text-yellow-400 border border-yellow-400/30' : 'bg-white/90 text-green-800 border border-green-200'}`}>
                     {isFarsi ? item.price_fa : item.price_en.toLocaleString('en-US')} {isFarsi ? 'ریال' : 'Rials'}
                   </div>
                 </div>}
+
+                <div className={`absolute bottom-[10px] ${!isFarsi ? 'left-3' : 'right-3'} z-30`}>
+                  <div className={`flex items-center text-xs font-bold px-[3px] py-[.5px] rounded-full shadow-inner ${dark ? 'bg-slate-900/70 text-yellow-400' : 'bg-white/70 text-green-950'}`}>
+                    <AiOutlineClockCircle size={14} className={`${!isFarsi ? 'mr-1.5' : 'ml-1.5'}`} />
+                    {!isFarsi ? minEstimate : convertToFarsiNumbers(minEstimate)} - {!isFarsi ? maxEstimate : convertToFarsiNumbers(maxEstimate)}
+                    <span className={`${!isFarsi ? 'ml-1.5' : 'mr-1.5'}`}>
+                      {!isFarsi ? 'min' : 'دقیقه'}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {reviews.length > 0 && (
@@ -338,7 +352,7 @@ export default function ItemModal({
               )}
 
               {/* Details Content */}
-              <div className="pt-3 pb-8 px-3 sm:px-6">
+              <div className="pt-3 pb-4 px-3 sm:px-6">
                 <div className={`mb-4 ${isFarsi ? 'text-right' : 'text-left'}`}>
                   <p className={`text-base leading-relaxed ${dark ? 'text-blue-100' : 'text-green-700'}`}>
                     {isFarsi ? item?.description_fa : item?.description_en}
@@ -397,7 +411,15 @@ export default function ItemModal({
                     }`}>
                     {item?.category ? getCategoryDisplayName(item.category) : ''}
                   </span>
-                  <Button text={t('menu.add_to_cart')} />
+                  <div className='flex items-center'>
+                    <Button text={t('menu.add_to_cart')} onClick={handleIncrementQuantity} />
+                    {/* Quantity Badge */}
+                    {itemQuantityInCart > 0 && (
+                      <div className={`wrapper bg-red-500 text-white size-8 ${!isFarsi ? 'ml-2' : 'mr-2'} rounded-full text-sm font-bold flex items-center justify-center`}>
+                        {isFarsi ? convertToFarsiNumbers(itemQuantityInCart) : itemQuantityInCart}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </>

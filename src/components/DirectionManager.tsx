@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { RootState } from '@/lib/store/store';
 
 export default function DirectionManager() {
   const language = useSelector((state: RootState) => state.language.language);

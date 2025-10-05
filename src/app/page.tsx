@@ -1,7 +1,7 @@
 'use client';
 
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { RootState } from '@/lib/store/store'
 import useHasMounted from '../hooks/useHasMounted';
 import Line from '../components/Line';
 import CategorizedMenu from '../lib/features/home/components/CategorizedMenu/CategorizedMenu';

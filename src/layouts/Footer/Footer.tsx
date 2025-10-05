@@ -2,13 +2,13 @@
 
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { RootState } from '@/lib/store/store';
 import Line from '@/components/Line';
 import { useState, useEffect, useRef } from 'react';
 import { footerData } from '@/data/footer';
 import { useDispatch } from 'react-redux';
-import { resetContactHighlight } from '@/lib/features/contactSlice';
-import type { AppDispatch } from '@/lib/store';
+import { resetContactHighlight } from '@/lib/store/features/contactSlice';
+import type { AppDispatch } from '@/lib/store/store';
 import styles from './Footer.module.css';
 
 interface FooterProps {

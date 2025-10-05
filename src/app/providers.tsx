@@ -3,13 +3,13 @@
 import { Provider, useSelector } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useState } from 'react'; 
-import cartReducer from '../lib/features/cartSlice';
-import languageReducer from '../lib/features/languageSlice';
-import themeReducer from '../lib/features/themeSlice';
-import contactReducer from '../lib/features/contactSlice'; // Add this import
-import { RootState } from '@/lib/store';
-import Line from '@/components/Line'; 
+import { useEffect, useState } from 'react';
+import cartReducer from '../lib/store/features/cartSlice';
+import languageReducer from '../lib/store/features/languageSlice';
+import themeReducer from '../lib/store/features/themeSlice';
+import contactReducer from '../lib/store/features/contactSlice'; // Add this import
+import { RootState } from '@/lib/store/store';
+import Line from '@/components/Line';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -36,7 +36,7 @@ function GlobalLoadingSpinner() {
 // Theme handler component that uses Redux state
 function ThemeHandler({ children }: { children: React.ReactNode }) {
   const dark = useSelector((state: RootState) => state.theme.dark);
-  
+
   useEffect(() => {
     const root = document.documentElement;
 
@@ -81,7 +81,7 @@ export function Providers({ children, initialLanguage }: ProvidersProps) {
   // This useEffect will run when `mounted` changes, handling the body class
   useEffect(() => {
     const body = document.body;
-    
+
     // Add the class during the initial render state
     if (!mounted) {
       body.classList.add('overflow-y-scroll');

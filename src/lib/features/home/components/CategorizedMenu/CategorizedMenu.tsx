@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { RootState } from '@/lib/store/store';
 import { fetchCategories, fetchMenuByCategory, fetchPopularMenuByCategory } from '@/api/menu';
 import { MenuItem as MenuItemType } from '@/types/api';
 import { useState, useEffect } from 'react';

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setLanguage } from '@/lib/features/languageSlice';
+import { setLanguage } from '@/lib/store/features/languageSlice';
 
 export default function LanguageInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();

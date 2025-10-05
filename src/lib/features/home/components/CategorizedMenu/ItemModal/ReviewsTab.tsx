@@ -2,7 +2,7 @@
 
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { RootState } from '@/lib/store/store';
 import { MenuItem as MenuItemType, Review } from '@/types/api';
 import { useState } from 'react';
 import Button from '@/components/Button';
@@ -26,7 +26,7 @@ export default function ReviewsTab({
   reviewsError
 }: ReviewsTabProps) {
   const { t, i18n } = useTranslation();
-  const dark = useSelector((state: RootState) => state.theme.dark);  
+  const dark = useSelector((state: RootState) => state.theme.dark);
 
   const [newReview, setNewReview] = useState({
     rating: 0,
@@ -123,7 +123,7 @@ export default function ReviewsTab({
       day: 'numeric'
     });
   };
-  
+
   return (
     <div className="p-4 pb-15 md:pb-6">
       {/* Add Review Form */}
