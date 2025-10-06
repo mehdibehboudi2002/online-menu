@@ -7,7 +7,7 @@ export function setThemeCookie(value: 'dark' | 'light') {
 }
 
 export function getThemeFromCookie(): 'dark' | 'light' {
-  if (typeof window === 'undefined') return 'dark'; // fallback
+  if (typeof window === 'undefined') return 'light'; 
   const cookie = Cookies.get('theme');
-  return cookie === 'light' ? 'light' : 'dark';
+  return cookie === 'dark' ? 'dark' : 'light'; 
 }

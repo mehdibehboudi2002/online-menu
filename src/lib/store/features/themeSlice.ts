@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { getThemeFromCookie, setThemeCookie } from "../../themeCookie";
 
 const initialState = {
-  dark: getThemeFromCookie() === "dark",
+  dark: getThemeFromCookie() === "dark", 
 };
 
 const themeSlice = createSlice({
