@@ -3,12 +3,9 @@ import { getItemsByCategoryFromSupabase } from '@/data/menuItemsData';
 import { MenuItem } from '@/types/api';
 
 export async function GET(
-  request: NextRequest,
   { params }: { params: { category: string } }
 ) {
   try {
-    const { searchParams } = new URL(request.url);
-    const isPopular = searchParams.get('isPopular');
     const category = params.category;
     
     const items: MenuItem[] = await getItemsByCategoryFromSupabase(category);

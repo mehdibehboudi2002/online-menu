@@ -39,7 +39,7 @@ export const getReviewsFromSupabase = async (
 
     const data: Review[] = await res.json();
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ Error in getReviewsFromSupabase:", error);
     throw error;
   }
@@ -75,7 +75,7 @@ export const addReviewToSupabase = async (
 
     const data: Review[] = await res.json();
     return data[0];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ Error in addReviewToSupabase:", error);
     throw error;
   }

@@ -8,12 +8,13 @@ import { useTranslation } from 'react-i18next';
 import { convertToFarsiNumbers } from '@/types/api';
 import Button from '@/components/Button';
 import Line from '@/components/Line';
+import { OrderReceipt } from '@/types/receipt';
 
 export default function PaymentSuccess() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const dark = useSelector((state: RootState) => state.theme.dark);
-  const [receipt, setReceipt] = useState<any>(null);
+  const [receipt, setReceipt] = useState<OrderReceipt | null>(null); 
   
   const currentLang = i18n.language as 'en' | 'fa';
   const isFarsi = currentLang === 'fa';
@@ -160,7 +161,7 @@ export default function PaymentSuccess() {
               <p>
                 {t('payment.estimated_prep') || 'Estimated preparation time'}: {' '}
                 <span className="font-semibold">
-                  {isFarsi ? convertToFarsiNumbers(receipt.minEstimate) : receipt.minEstimate} - {isFarsi ? convertToFarsiNumbers(receipt.maxEstimate) : receipt.maxEstimate} {t('payment.minutes') || 'minutes'}
+                  {isFarsi ? convertToFarsiNumbers(receipt.minEstimate!) : receipt.minEstimate} - {isFarsi ? convertToFarsiNumbers(receipt.maxEstimate!) : receipt.maxEstimate} {t('payment.minutes') || 'minutes'}
                 </span>
               </p>
             </div>

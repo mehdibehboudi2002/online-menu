@@ -12,11 +12,12 @@ import Line from './Line';
 import ItemModal from '@/lib/features/home/components/CategorizedMenu/ItemModal/ItemModal';
 import { AiOutlineMinus, AiOutlinePlus, AiOutlineClockCircle } from 'react-icons/ai';
 import RestaurantMap from '@/lib/features/cart/components/RestaurantMap';
+import { CartItem } from '@/types/client';
 
 export default function Cart() {
   const { t, i18n } = useTranslation();
   const dark = useSelector((state: RootState) => state.theme.dark);
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+const cartItems = useSelector((state: RootState) => state.cart.items) as CartItem[];
   const totalItemsCount = useSelector(selectTotalItemsInCart);
   const isComingNow = useSelector((state: RootState) => state.cart.deliveryDetails.isComingNow);
   const isSelectingTableLater = useSelector((state: RootState) => state.cart.deliveryDetails.isSelectingTableLater);
@@ -31,7 +32,7 @@ export default function Cart() {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   // Payment state 
   const [showReceipt, setShowReceipt] = useState(false);
-  const [receiptData, setReceiptData] = useState<any>(null);
+  const [receiptData, setReceiptData] = useState<OrderReceiptData | null>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Function to return to cart view
@@ -51,11 +52,11 @@ export default function Cart() {
     dispatch(decrementQuantity(itemId));
   };
 
-  const handleIncrementQuantity = (item: any) => {
+  const handleIncrementQuantity = (item: CartItem) => {
     dispatch(addToCart(item as MenuItemType));
   };
 
-  const handleItemClick = (item: any) => {
+  const handleItemClick = (item: CartItem) => {
     const menuItem: MenuItemType = {
       id: item.id,
       name_en: item.name_en,
@@ -397,7 +398,7 @@ export default function Cart() {
                   {t('cart.your_items') || 'Your Items'}
                 </h4>
                 <div className="space-y-2">
-                  {receiptData.items.map((item: any) => (
+                  {receiptData.items.map((item: ReceiptItem) => (
                     <div key={item.id} className={`flex justify-between items-center py-2 px-3 rounded
               ${dark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
                       <span className={`text-sm ${dark ? 'text-slate-300' : 'text-gray-700'}`}>

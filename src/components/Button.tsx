@@ -2,10 +2,9 @@
 import { useState } from "react";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store/store';
-import { useTranslation } from "react-i18next";
 
 type ButtonProps = {
-    icon?: any;
+    icon?: React.ReactNode;
     text?: string;
     className?: string;
     textSize?: string;
@@ -29,9 +28,6 @@ const Button = ({
 }: ButtonProps) => {
     const [isMouseOnBtn, setIsMouseOnBtn] = useState<boolean>(false);
     const dark = useSelector((state: RootState) => state.theme.dark);
-    const { i18n } = useTranslation();
-    const currentLang = i18n.language as 'en' | 'fa';
-    const isFarsi = currentLang === 'fa';
 
     // Handle disabled state styling
     const backgroundClasses = disabled

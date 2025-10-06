@@ -47,7 +47,6 @@ export default function CategorizedMenu({
     data: categoryQueriesData,
     isLoading: categoryQueriesLoading,
     error: categoryQueriesError,
-    refetch: refetchMenuItems
   } = useQuery({
     queryKey: ['categorizedMenu', showOnlyPopular],
     queryFn: async () => {
@@ -62,7 +61,7 @@ export default function CategorizedMenu({
               ? await fetchPopularMenuByCategory(category)
               : await fetchMenuByCategory(category);
             results[category] = items || [];
-          } catch (error) {
+          } catch {
             results[category] = [];
           }
         })
@@ -90,8 +89,7 @@ export default function CategorizedMenu({
           exact: true
         })
       ]);
-    } catch (error) {
-    }
+    } catch { }
   };
 
   useEffect(() => {

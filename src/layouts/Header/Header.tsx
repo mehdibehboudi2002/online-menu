@@ -58,11 +58,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   };
 
   const handleSearchSubmit = async (query: string) => {
-    try {
-      // Call the new search API with the query
-      const results = await searchMenuItems(query);
-
-    } catch (error) { }
+    try { } catch { }
   };
 
   // For the desktop contact button
@@ -117,13 +113,13 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch categories to check which ones have items
-  const { data: apiCategories, isLoading: isLoadingApiCategories, error: apiCategoriesError, refetch: refetchApiCategories } = useQuery({
+  const { data: apiCategories, isLoading: isLoadingApiCategories, error: apiCategoriesError } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
 
   // Fetch items for each category to determine which are empty
-  const { data: categoriesWithItems, isLoading: isLoadingCategoriesWithItems, error: categoriesWithItemsError, refetch: refetchCategoriesWithItems } = useQuery({
+  const { data: categoriesWithItems, isLoading: isLoadingCategoriesWithItems, error: categoriesWithItemsError } = useQuery({
     queryKey: ['categoriesWithItems', showOnlyPopular, apiCategories],
     queryFn: async () => {
       if (!apiCategories || apiCategories.length === 0) {
@@ -290,7 +286,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   };
 
   // Loading Spinner Component
-  const LoadingSpinner = ({ size = 20, className = "" }: { size?: number; className?: string }) => (
+  const LoadingSpinner = ({ }: { size?: number; className?: string }) => (
     <span className={`px-[2px] py-0.5 rounded-full text-xs flex items-center justify-center ${dark ? 'text-blue-200' : 'text-green-700'
       }`}>
       <svg className={`animate-spin h-4 w-4 ${dark ? 'text-yellow-400' : 'text-green-600'}`} fill="none" viewBox="0 0 24 24">

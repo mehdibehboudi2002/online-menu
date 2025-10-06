@@ -106,7 +106,7 @@ export default function MenuItem({
     dispatch(decrementQuantity(item.id));
   };
 
-  const handleImageError = (imageUrl: string) => {
+  const handleImageError = () => {
     // This is a simple fix for the onImageError function
     onImageError(item.id);
   };
