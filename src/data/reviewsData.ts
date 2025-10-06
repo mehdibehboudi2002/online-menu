@@ -1,8 +1,8 @@
 import { Review, CreateReviewRequest } from "@/types/api";
 
-// Supabase credentials
-const SUPABASE_URL = "https://cyzwgmruoqhdztzcgcmr.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5endnbXJ1b3FoZHp0emNnY21yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2ODcxNjYsImV4cCI6MjA3MDI2MzE2Nn0.h6srWcb98xe9exJZ1CEJg4dLo7nk2-JHaAdm73UiJ3k";
+// Supabase credentials from environment variables
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 const BASE_REVIEWS_API_URL = `${SUPABASE_URL}/rest/v1/Reviews`;
 

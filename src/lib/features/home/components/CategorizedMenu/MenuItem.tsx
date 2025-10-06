@@ -24,7 +24,7 @@ interface ItemProps {
 
 // Function to construct the image URL
 const getFullImageUrl = (imagePath: string): string => {
-  const SUPABASE_URL = "https://cyzwgmruoqhdztzcgcmr.supabase.co";
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const BUCKET_NAME = "public_images";
 
   // This removes the leading '/' if it exists

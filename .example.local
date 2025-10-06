@@ -1,0 +1,37 @@
+# =============================================================================
+# SUPABASE CONFIGURATION
+# =============================================================================
+# This application uses Supabase as the backend database.
+# 
+# To set up your own instance:
+# 1. Create a free account at https://supabase.com
+# 2. Create a new project
+# 3. Go to Project Settings > API
+# 4. Copy your project URL and anon/public key
+# 5. Paste them below
+# 
+# Documentation: https://supabase.com/docs/guides/getting-started
+# =============================================================================
+
+# Your Supabase project URL
+# Example: https://xyzcompany.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url_here
+
+# Your Supabase anonymous/public key (safe for client-side use)
+# Example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+
+# =============================================================================
+# SETUP INSTRUCTIONS
+# =============================================================================
+# 1. Copy this file and rename it to `.env.local`
+# 2. Replace the placeholder values with your actual Supabase credentials
+# 3. Restart your development server
+# 
+# Required Tables in Supabase:
+# - MenuItems: Stores menu item data with images
+# - Reviews: Stores customer reviews
+# 
+# Required Storage Bucket:
+# - public_images: For storing menu item images (public access)
+# =============================================================================

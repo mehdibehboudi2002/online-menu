@@ -26,7 +26,7 @@ interface ItemModalProps {
 }
 
 const getFullImageUrl = (imagePath: string): string => {
-  const SUPABASE_URL = "https://cyzwgmruoqhdztzcgcmr.supabase.co";
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const BUCKET_NAME = "public_images";
 
   const sanitizedPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
