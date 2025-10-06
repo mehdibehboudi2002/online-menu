@@ -16,7 +16,7 @@ import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Line from '@/components/Line';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCategories, fetchMenuByCategory, fetchPopularMenuByCategory, searchMenuItems } from '@/api/menu';
+import { fetchCategories, fetchMenuByCategory, fetchPopularMenuByCategory } from '@/api/menu';
 import SearchIcon from "@/components/icons/SearchIcon";
 import SearchModal from '../../components/SearchModal';
 import {
@@ -57,7 +57,7 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
     setIsSearchModalOpen(false);
   };
 
-  const handleSearchSubmit = async (query: string) => {
+  const handleSearchSubmit = async () => {
     try { } catch { }
   };
 

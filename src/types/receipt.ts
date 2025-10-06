@@ -1,5 +1,5 @@
 // Define the structure of an item in the receipt
-interface ReceiptItem {
+export interface ReceiptItem {
   id: string;
   name_en: string;
   name_fa: string;
@@ -9,7 +9,7 @@ interface ReceiptItem {
 }
 
 // Define the structure of the entire receipt data object
-interface OrderReceiptData {
+export interface OrderReceipt {
   items: ReceiptItem[];
   totalItems: number;
   formattedTotal: string;

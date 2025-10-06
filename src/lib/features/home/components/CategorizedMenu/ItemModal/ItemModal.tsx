@@ -55,7 +55,7 @@ export default function ItemModal({
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
-  const [hasMounted, setHasMounted] = useState(false);
+  const [, setHasMounted] = useState(false);
 
   // New refs for drag detection
   const modalContentRef = useRef<HTMLDivElement>(null);
@@ -102,7 +102,7 @@ export default function ItemModal({
     try {
       const data = await fetchReviews(itemId);
       setReviews(data);
-    } catch (error) {
+    } catch {
       setReviewsError('Failed to load reviews. Please try again.');
     } finally {
       setReviewsLoading(false);

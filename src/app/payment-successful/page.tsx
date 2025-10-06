@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { convertToFarsiNumbers } from '@/types/api';
 import Button from '@/components/Button';
 import Line from '@/components/Line';
-import { OrderReceipt } from '@/types/receipt';
+import { OrderReceipt, ReceiptItem } from '@/types/receipt';
 
 export default function PaymentSuccess() {
   const { t, i18n } = useTranslation();
@@ -142,7 +142,7 @@ export default function PaymentSuccess() {
               {t('cart.your_items') || 'Your Items'}
             </h4>
             <div className="space-y-2">
-              {receipt.items.map((item: any) => (
+              {receipt.items.map((item: ReceiptItem) => (
                 <div key={item.id} className={`flex justify-between items-center py-2 px-2 md:px-3 rounded text-xs md:text-sm ${dark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
                   <span className={`${dark ? 'text-slate-300' : 'text-gray-700'} break-words pr-2`}>
                     {isFarsi ? item.name_fa : item.name_en} × {isFarsi ? convertToFarsiNumbers(item.quantity) : item.quantity}

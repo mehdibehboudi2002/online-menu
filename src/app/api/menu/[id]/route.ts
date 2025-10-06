@@ -3,11 +3,11 @@ import { getItemByIdFromSupabase } from '@/data/menuItemsData';
 import { MenuItem } from '@/types/api';
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const item: MenuItem | null = await getItemByIdFromSupabase(id);
     
     if (!item) {

@@ -13,6 +13,7 @@ import ItemModal from '@/lib/features/home/components/CategorizedMenu/ItemModal/
 import { AiOutlineMinus, AiOutlinePlus, AiOutlineClockCircle } from 'react-icons/ai';
 import RestaurantMap from '@/lib/features/cart/components/RestaurantMap';
 import { CartItem } from '@/types/client';
+import { OrderReceipt, ReceiptItem } from '@/types/receipt';
 
 export default function Cart() {
   const { t, i18n } = useTranslation();
@@ -32,7 +33,7 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   // Payment state 
   const [showReceipt, setShowReceipt] = useState(false);
-  const [receiptData, setReceiptData] = useState<OrderReceiptData | null>(null);
+  const [receiptData, setReceiptData] = useState<OrderReceipt | null>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Function to return to cart view

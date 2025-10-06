@@ -3,10 +3,11 @@ import { getItemsByCategoryFromSupabase } from '@/data/menuItemsData';
 import { MenuItem } from '@/types/api';
 
 export async function GET(
-  { params }: { params: { category: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ category: string }> }
 ) {
   try {
-    const category = params.category;
+    const { category } = await params;
     
     const items: MenuItem[] = await getItemsByCategoryFromSupabase(category);
     

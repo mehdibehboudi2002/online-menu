@@ -3,10 +3,10 @@ import { getReviewsFromSupabase } from '@/data/reviewsData';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { itemId: string } } 
+  { params }: { params: Promise<{ itemId: string }> } 
 ) {
   try {
-    const itemId = params.itemId; // Get the itemId as a string
+    const { itemId } = await params;
 
     if (!itemId) {
       return NextResponse.json({ message: "Item ID is required." }, { status: 400 });
