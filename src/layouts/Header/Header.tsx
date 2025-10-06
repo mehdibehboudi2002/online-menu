@@ -464,8 +464,8 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
               className={`min-w-36 min-h-9 flex justify-center items-center rounded-2xl bg-white text-green-950 text-sm border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
             >
               <div className="mr-1.5">{t('header.language_button')}</div>
-              <div>{isFarsi ? <img src="images/header/en-flag.webp" alt="En" className="w-[18px] h-3 rounded-[5px]" />
-                : <img src="images/header/fa-flag.png" alt="Fa" className="w-[18px] h-3 rounded-[5px]" />}</div>
+              <div>{!isFarsi ? <img src="images/header/fa-flag.png" alt="Fa" className="w-[18px] h-3 rounded-[5px]" />
+                : <img src="images/header/en-flag.webp" alt="En" className="w-[18px] h-3 rounded-[5px]" />}</div>
             </button>
           </div>
         </div>
@@ -500,8 +500,8 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
             onClick={() => dispatch(toggleLanguage())}
             className={`size-[36.9px] flex justify-center items-center rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
           >
-            {!isFarsi ? <img src="images/header/en-flag.webp" alt="En" className="size-4 rounded-full" />
-              : <img src="images/header/fa-flag.png" alt="Fa" className="size-4 rounded-full" />}
+            {!isFarsi ? <img src="images/header/fa-flag.png" alt="Fa" className="size-4 rounded-full" />
+              : <img src="images/header/en-flag.webp" alt="En" className="size-4 rounded-full" />}
           </button>
 
           <div className="flex lg:hidden flex-col items-center justify-center">
