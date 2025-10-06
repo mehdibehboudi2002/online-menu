@@ -89,12 +89,8 @@ export default function ItemModal({
     }
   };
 
-  const maxDeliveryTime = cartItems.length > 0
-    ? Math.max(...cartItems.map(item => item.estimated_delivery_time_minutes || 0))
-    : item.estimated_delivery_time_minutes || 0;
-
-  const minEstimate = maxDeliveryTime;
-  const maxEstimate = maxDeliveryTime + 5;
+  const minEstimate = item.estimated_delivery_time_minutes || 0;
+  const maxEstimate = (item.estimated_delivery_time_minutes || 0) + 5;
 
   const loadReviews = async (itemId: string) => {
     setReviewsLoading(true);

@@ -57,6 +57,53 @@ export default function GallerySlider({
     );
   }
 
+  // For non-modal on mobile (<md), show only first image without slider
+  if (!isModal && validImages.length >= 1) {
+    return (
+      <>
+        {/* Mobile: Single image only */}
+        <div className={`md:hidden relative w-full h-full overflow-hidden ${className}`} onClick={onGalleryClick}>
+          <img
+            src={validImages[0]}
+            alt={alt}
+            className="w-full h-full object-cover transition-transform duration-500"
+            onError={() => onImageError?.(validImages[0])}
+          />
+        </div>
+
+        {/* Desktop: Full slider */}
+        <div className={`hidden md:block relative w-full h-full ${className}`}>
+          {validImages.length === 1 ? (
+            <div className="relative w-full h-full overflow-hidden" onClick={onGalleryClick}>
+              <img
+                src={validImages[0]}
+                alt={alt}
+                className="w-full h-full object-cover transition-transform duration-500"
+                onError={() => onImageError?.(validImages[0])}
+              />
+            </div>
+          ) : (
+            <SliderContent
+              validImages={validImages}
+              alt={alt}
+              effect={effect}
+              dark={dark}
+              onImageError={onImageError}
+              onGalleryClick={onGalleryClick}
+              isModal={isModal}
+              swiperRef={swiperRef}
+              isBeginning={isBeginning}
+              isEnd={isEnd}
+              setIsBeginning={setIsBeginning}
+              setIsEnd={setIsEnd}
+            />
+          )}
+        </div>
+      </>
+    );
+  }
+
+  // For modal or single image: show slider on all screens
   if (validImages.length === 1) {
     return (
       <div className={`relative w-full h-full overflow-hidden ${className}`} onClick={onGalleryClick}>
@@ -70,6 +117,52 @@ export default function GallerySlider({
     );
   }
 
+  return (
+    <SliderContent
+      validImages={validImages}
+      alt={alt}
+      effect={effect}
+      dark={dark}
+      onImageError={onImageError}
+      onGalleryClick={onGalleryClick}
+      isModal={isModal}
+      swiperRef={swiperRef}
+      isBeginning={isBeginning}
+      isEnd={isEnd}
+      setIsBeginning={setIsBeginning}
+      setIsEnd={setIsEnd}
+    />
+  );
+}
+
+// Slider Content Component
+function SliderContent({
+  validImages,
+  alt,
+  effect,
+  dark,
+  onImageError,
+  onGalleryClick,
+  isModal,
+  swiperRef,
+  isBeginning,
+  isEnd,
+  setIsBeginning,
+  setIsEnd
+}: {
+  validImages: string[];
+  alt: string;
+  effect: 'slide' | 'fade';
+  dark: boolean;
+  onImageError?: (imageUrl: string) => void;
+  onGalleryClick?: (event: React.MouseEvent) => void;
+  isModal: boolean;
+  swiperRef: React.MutableRefObject<SwiperType | null>;
+  isBeginning: boolean;
+  isEnd: boolean;
+  setIsBeginning: (val: boolean) => void;
+  setIsEnd: (val: boolean) => void;
+}) {
   const handlePrevClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -97,13 +190,12 @@ export default function GallerySlider({
     setIsEnd(swiper.isEnd);
   };
 
-  // Conditionally apply visibility classes based on the isModal prop
   const navClasses = isModal
-    ? 'opacity-100' // Always visible
+    ? 'opacity-100'
     : 'opacity-0 group-hover:opacity-100 md:opacity-100 xl:opacity-0 xl:group-hover:opacity-100';
 
   return (
-    <div className={`relative w-full h-full ${className}`}>
+    <div className="relative w-full h-full">
       <Swiper
         modules={[Pagination, EffectFade, Autoplay]}
         spaceBetween={0}
@@ -118,7 +210,8 @@ export default function GallerySlider({
           dynamicBullets: true,
           dynamicMainBullets: 3,
         }}
-        className={`w-full h-full gallery-swiper group ${isModal ? 'modal-gallery' : ''}`} onSwiper={handleSwiperInit}
+        className={`w-full h-full gallery-swiper group ${isModal ? 'modal-gallery' : ''}`}
+        onSwiper={handleSwiperInit}
         onSlideChange={handleSlideChange}
       >
         {validImages.map((image, index) => (
@@ -139,7 +232,6 @@ export default function GallerySlider({
       {/* Navigation Buttons */}
       {validImages.length > 1 && (
         <>
-          {/* Previous Button */}
           <button
             className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 size-7 md:size-8 rounded-full backdrop-blur-md transition-all duration-300 flex items-center justify-center 
               ${navClasses}
@@ -162,7 +254,6 @@ export default function GallerySlider({
             </svg>
           </button>
 
-          {/* Next Button */}
           <button
             className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 size-7 md:size-8 rounded-full backdrop-blur-md transition-all duration-300 flex items-center justify-center 
               ${navClasses}

@@ -75,12 +75,8 @@ export default function MenuItem({
     ? 'opacity-100 translate-y-0 transition-all duration-700 ease-out'
     : 'opacity-0 translate-y-4';
 
-  const maxDeliveryTime = cartItems.length > 0
-    ? Math.max(...cartItems.map(item => item.estimated_delivery_time_minutes || 0))
-    : item.estimated_delivery_time_minutes || 0;
-
-  const minEstimate = maxDeliveryTime;
-  const maxEstimate = maxDeliveryTime + 5;
+  const minEstimate = item.estimated_delivery_time_minutes || 0;
+  const maxEstimate = (item.estimated_delivery_time_minutes || 0) + 5;
 
   const handleIncrementQuantity = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -142,8 +138,8 @@ export default function MenuItem({
           />
         </div>
 
-        <div className={`absolute top-[30px] left-[8px] z-30`}>
-          <div className={`flex items-center text-[9px] rounded-t-lg shadow-inner ${dark ? 'bg-slate-700/70 text-yellow-500 px-[3.5px]' : 'bg-white/70 text-green-900 px-[1.4px] font-bold'}`}>
+        <div className={`absolute top-[30px] ${!isFarsi ? 'left-[8px]' : 'right-[8px]'} z-30`}>
+          <div className={`flex items-center ${!isFarsi ? 'text-[9px]' : 'text-[8.4px]'} rounded-t-lg shadow-inner ${dark ? 'bg-slate-700/70 text-yellow-500' : 'bg-white/70 text-green-900 font-bold'} ${!isFarsi ? dark ? 'px-[3.5px]' : 'px-[1.4px]' : dark ? 'px-[2.5px]' : 'px-[1.5px]'}`}>
             <AiOutlineClockCircle size={9} className={`${!isFarsi ? 'mr-1' : 'ml-1'}`} />
             {!isFarsi ? minEstimate : convertToFarsiNumbers(minEstimate)} - {!isFarsi ? maxEstimate : convertToFarsiNumbers(maxEstimate)}
             <span className={`${!isFarsi ? 'ml-1' : 'mr-1'}`}>
@@ -152,7 +148,7 @@ export default function MenuItem({
           </div>
         </div>
 
-        <div className='flex'>
+        <div className='flex justify-between items-center w-full'>
           <div className={`flex-1 mx-4 ${isFarsi ? 'text-right' : 'text-left'}`}>
             <div className="flex items-center justify-between mb-1">
               <h3 className={`text-sm md:text-lg font-bold ${dark ? 'text-blue-200' : 'text-green-900'} ${isFarsi ? 'order-2' : 'order-1'}`}>
