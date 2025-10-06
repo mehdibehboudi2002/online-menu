@@ -8,8 +8,8 @@
 
 > A modern, full-stack restaurant management system featuring digital menu browsing, real-time ordering, interactive table reservations, and intelligent scheduling — built with Next.js, TypeScript, and Supabase.
 
-**🔗 Live Demo:** [Coming Soon]  
-**📦 Repository:** [github.com/mehdibehboudi2002/online-menu](https://github.com/mehdibehboudi2002/online-menu)
+**🔗 Live Demo:** (https://cafehubos.vercel.app/)
+**📦 Repository:** (https://github.com/mehdibehboudi2002/online-menu)
 
 ---
 
@@ -320,6 +320,7 @@ This project demonstrates expertise in:
 ---
 
 ### Acknowledgments
+
 Supabase - Provider for PostgreSQL Database and Storage
 
 - [Next.js](https://nextjs.org/) - The React framework
