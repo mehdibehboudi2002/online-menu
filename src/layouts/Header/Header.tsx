@@ -42,6 +42,8 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
   const { t } = useTranslation();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [showCartButton, setShowCartButton] = useState(true);
+  const showOnScroll = true;
   const totalItemsCount = useSelector(selectTotalItemsInCart);
   const pathname = usePathname();
   const isPaymentSuccessPage = pathname === '/payment-successful';
@@ -242,6 +244,35 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
     }
   }, [hasMounted, startAutoScroll]);
 
+  useEffect(() => {
+    if (!showOnScroll) return;
+
+    const toggleVisibility = () => {
+      // Only apply scroll logic on md screens and up
+      if (window.innerWidth >= 768) {
+        if (window.pageYOffset > 35) {
+          setShowCartButton(true);
+        } else {
+          setShowCartButton(false);
+        }
+      } else {
+        // Always show on mobile
+        setShowCartButton(true);
+      }
+    };
+
+    // Initial check
+    toggleVisibility();
+
+    window.addEventListener('scroll', toggleVisibility);
+    window.addEventListener('resize', toggleVisibility);
+
+    return () => {
+      window.removeEventListener('scroll', toggleVisibility);
+      window.removeEventListener('resize', toggleVisibility);
+    };
+  }, []);
+
   // Handle mouse enter/leave for auto-scroll control (only on mobile)
   const handleMouseEnter = () => {
     if (window.innerWidth >= 1024) return;
@@ -434,30 +465,27 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
             </button>
             <button
               onClick={() => dispatch(toggleLanguage())}
-              className={`min-w-36 min-h-9 rounded-2xl bg-white text-green-950 text-sm border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
+              className={`min-w-36 min-h-9 flex justify-center items-center rounded-2xl bg-white text-green-950 text-sm border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
             >
-              {t('header.language_button')}
+              <div className="mr-1.5">{t('header.language_button')}</div>
+              <div>{isFarsi ? <img src="images/header/en-flag.webp" alt="En" className="w-[18px] h-3 rounded-[5px]" />
+                : <img src="images/header/fa-flag.png" alt="Fa" className="w-[18px] h-3 rounded-[5px]" />}</div>
             </button>
           </div>
         </div>
 
         {/* Mobile Header */}
         <div className={`flex lg:hidden justify-between items-center gap-3 p-4 bg-green-950`}>
-          <div className="flex lg:hidden flex-col items-center justify-center">
-            <div
-              className="w-[30px] flex items-center justify-center"
-              onClick={handleOpenSearchModal}
-            >
-              <SearchIcon
-                className="cursor-pointer"
-                color="#000"
-              />
-            </div>
-          </div>
+          <button
+            onClick={handleMobileContactClick}
+            className={`relative flex justify-center items-center p-[4.5px] rounded-full bg-white hover:bg-green-50 hover:border-1 transition-all duration-300 cursor-pointer ${fontClass}`}
+          >
+            <MdSupportAgent size={19} color="#000" />
+          </button>
 
           <button
             onClick={() => dispatch(toggleTheme())}
-            className={`w-[36.9px] h-[36.9px] p-0 text-xs font-bold rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
+            className={`size-[36.9px] p-0 text-xs font-bold rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
           >
             {dark ? t('header.theme_light_responsive') : t('header.theme_dark_responsive')}
           </button>
@@ -474,22 +502,23 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
 
           <button
             onClick={() => dispatch(toggleLanguage())}
-            className={`w-[36.9px] h-[36.9px] p-0 text-xs font-bold rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
+            className={`size-[36.9px] flex justify-center items-center rounded-full bg-white text-green-950 border-1 border-green-950 hover:bg-green-950 hover:text-white hover:border-1 hover:border-white transition-all duration-300 cursor-pointer ${fontClass}`}
           >
-            {t('header.language_button_responsive')}
+            {!isFarsi ? <img src="images/header/en-flag.webp" alt="En" className="size-4 rounded-full" />
+              : <img src="images/header/fa-flag.png" alt="Fa" className="size-4 rounded-full" />}
           </button>
 
-          <button
-            onClick={handleOpenCartModal}
-            className={`relative flex justify-center items-center p-[4.5px] rounded-full bg-white hover:bg-green-50 hover:border-1 transition-all duration-300 cursor-pointer ${fontClass}`}
-          >
-            <MdOutlineShoppingBag size={19} color="#000" />
-            {totalItemsCount > 0 && ( // Display the count
-              <span className="absolute -top-2 -right-2 size-5 text-[10px] font-bold rounded-full bg-yellow-400 text-slate-900 flex items-center justify-center pointer-events-none">
-                {totalItemsCount}
-              </span>
-            )}
-          </button>
+          <div className="flex lg:hidden flex-col items-center justify-center">
+            <div
+              className="w-[30px] flex items-center justify-center"
+              onClick={handleOpenSearchModal}
+            >
+              <SearchIcon
+                className="cursor-pointer"
+                color="#000"
+              />
+            </div>
+          </div>
         </div>
 
         <Line width={'100vw'} />
@@ -497,81 +526,106 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
 
       {/* Sticky Categories Section */}
       {!isPaymentSuccessPage && (
-      <div className={`sticky top-0 z-50 ${fontClass}`} style={{ position: 'sticky' }}>
-        <div className={`${dark ? "bg-green-950" : "bg-gradient-to-r from-[#f7fee7] via-green-100 to-[#f7fee7] text-green-950"}`}>
-          <div className={`flex justify-center items-center p-4`}>
-            <div
-              className="categories_container w-full overflow-x-auto scrollbar-hide"
-              ref={scrollRef}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              style={{
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                direction: 'ltr'
-              }}
-            >
-              <div className="w-full hidden lg:inline-flex items-center justify-between flex-nowrap gap-4 min-w-max">
-                {/* Left side */}
-                <div className="flex-1 flex justify-between gap-4 lg:pr-6 xl:pr-23">
-                  {leftCategories.map(category => (
-                    <CategoryItem key={category.id} category={category} />
-                  ))}
-                </div>
+        <div className={`sticky top-0 z-50 ${fontClass}`} style={{ position: 'sticky' }}>
+          <div className={`${dark ? "bg-green-950" : "bg-gradient-to-r from-[#f7fee7] via-green-100 to-[#f7fee7] text-green-950"}`}>
+            <div className={`flex justify-center items-center p-4`}>
+              <div
+                className="categories_container w-full overflow-x-auto scrollbar-hide"
+                ref={scrollRef}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  direction: 'ltr'
+                }}
+              >
+                <div className="w-full hidden lg:inline-flex items-center justify-between flex-nowrap gap-4 min-w-max">
+                  {/* Left side */}
+                  <div className="flex-1 flex justify-between gap-4 lg:pr-6 xl:pr-23">
+                    {leftCategories.map(category => (
+                      <CategoryItem key={category.id} category={category} />
+                    ))}
+                  </div>
 
-                {/* SearchIcon in the middle */}
-                <div className="hidden lg:flex flex-col items-center justify-center">
-                  <div
-                    className="w-[30px] flex items-center justify-center"
-                    onClick={handleOpenSearchModal}
-                  >
-                    <SearchIcon
-                      className="cursor-pointer"
-                      hasBorder={true}
-                    />
+                  {/* SearchIcon in the middle */}
+                  <div className="hidden lg:flex flex-col items-center justify-center">
+                    <div
+                      className="w-[30px] flex items-center justify-center"
+                      onClick={handleOpenSearchModal}
+                    >
+                      <SearchIcon
+                        className="cursor-pointer"
+                        hasBorder={true}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right side */}
+                  <div className="flex-1 flex justify-between gap-4 lg:pl-6 xl:pl-23">
+                    {rightCategories.map(category => (
+                      <CategoryItem key={category.id} category={category} />
+                    ))}
                   </div>
                 </div>
 
-                {/* Right side */}
-                <div className="flex-1 flex justify-between gap-4 lg:pl-6 xl:pl-23">
-                  {rightCategories.map(category => (
-                    <CategoryItem key={category.id} category={category} />
-                  ))}
-                </div>
-              </div>
-
-              <div className="w-full inline-flex lg:hidden items-center justify-between flex-nowrap gap-4 min-w-max">
-                {/* Left side */}
-                <div className="flex-1 flex justify-between gap-4 lg:pr-6 xl:pr-23">
-                  {categories.map(category => (
-                    <CategoryItem key={category.id} category={category} />
-                  ))}
+                <div className="w-full inline-flex lg:hidden items-center justify-between flex-nowrap gap-4 min-w-max">
+                  {/* Left side */}
+                  <div className="flex-1 flex justify-between gap-4 lg:pr-6 xl:pr-23">
+                    {categories.map(category => (
+                      <CategoryItem key={category.id} category={category} />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <Line width={'100vw'} />
-      </div>)}
+          <Line width={'100vw'} />
+        </div>)}
 
-      {/* Mobile Fixed Contact Button */}
+      <style jsx>{`
+      @keyframes pulse-scale {
+        0%, 100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+      .pulse-scale {
+        animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      .pulse-scale:hover {
+         animation: none;
+       }
+      `}</style>
+
+      {/* Fixed Shopping Cart Button */}
       <button
-        onClick={handleMobileContactClick}
+        onClick={handleOpenCartModal}
         className={`
-        size-[46px] md:size-12 fixed lg:hidden bottom-4 left-4 md:bottom-7 md:left-7 z-50
+        size-10 md:size-12 fixed bottom-4 right-4 z-50
         rounded-full 
         ${dark
             ? 'bg-[#ffc903] text-[#032e15] hover:bg-[#008f39]'
             : 'bg-[#032e15] text-[#ffc903] hover:bg-[#008f39]'
           }
         shadow-lg 
-        transition-all duration-300
         flex items-center justify-center
-        animate-pulse hover:animate-none
+        select-none transition-all duration-500 ease-in-out transform
+        ${showCartButton
+            ? 'opacity-100 translate-y-0 scale-100 pulse-scale'
+            : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
+          }
       `}
-        aria-label={t('footer.contact_info')}
       >
-        <MdSupportAgent size={24} />
+        <MdOutlineShoppingBag className="hidden md:block" size={24} />
+        <MdOutlineShoppingBag className="block md:hidden" size={20} />
+        {totalItemsCount > 0 && (
+          <span className="absolute -top-1 -right-1 size-4 md:size-5 text-[10px] font-bold rounded-full bg-yellow-400 text-slate-900 flex items-center justify-center pointer-events-none">
+            {totalItemsCount}
+          </span>
+        )}
       </button>
 
       <CartModal

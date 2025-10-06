@@ -28,7 +28,7 @@ const ScrollToTop = () => {
             showOnScroll={true}
             isScrollToTop={true}
             color={pointerColor}
-            className={`fixed bottom-4 right-4 md:bottom-7 md:right-7 z-50 ${bgClassName} backdrop-blur-sm rounded-full p-[5px] md:p-1.5 shadow-lg`}
+            className={`hidden md:block fixed bottom-4 left-4 z-50 ${bgClassName} backdrop-blur-sm rounded-full p-[5px] md:p-1.5 shadow-lg`}
         />
     );
 };
