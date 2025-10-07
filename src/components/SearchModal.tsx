@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import MenuItem from '@/lib/features/home/components/CategorizedMenu/MenuItem';
 import { useTranslation } from 'react-i18next';
 import { searchMenuItems } from '@/api/menu';
 import { MenuItem as MenuItemType } from '@/types/api';
+import MenuItem from '@/lib/features/home/components/CategorizedMenu/MenuItem';
 import ItemModal from '@/lib/features/home/components/CategorizedMenu/ItemModal/ItemModal';
 
 interface SearchModalProps {
@@ -21,6 +21,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   // New states for search functionality
   const [searchResults, setSearchResults] = useState<MenuItemType[]>([]);
@@ -83,26 +84,29 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
   }, [isOpen, selectedItem, hasMounted]); // Add selectedItem as dependency
 
   useEffect(() => {
-    if (!hasMounted) return; // Don't run animations until hydrated
+    if (!hasMounted) return;
 
     if (isOpen) {
-      // When opening: first render the component, then start the animation
+      setIsClosing(false);
       setShouldRender(true);
-      // Use a slightly longer timeout to ensure proper rendering
       setTimeout(() => {
         setIsVisible(true);
       }, 20);
-      // Auto-focus after animation starts
       setTimeout(() => inputRef.current?.focus(), 120);
-    } else {
-      // When closing: start the closing animation first
-      setIsVisible(false);
-      // Then remove from DOM after animation completes
-      setTimeout(() => {
-        setShouldRender(false);
-      }, 150); // This should match your transition duration
     }
   }, [isOpen, hasMounted]);
+
+  // Handle cleanup when parent closes the modal
+  useEffect(() => {
+    if (!hasMounted) return;
+
+    if (!isOpen && shouldRender) {
+      setTimeout(() => {
+        setShouldRender(false);
+        setIsClosing(false);
+      }, 150);
+    }
+  }, [isOpen, shouldRender, hasMounted]);
 
   // Auto-search effect - triggers search when user types
   useEffect(() => {
@@ -151,15 +155,22 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
   // Handle key press for Escape key
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
-      onClose();
+      setIsClosing(true);
+      setIsVisible(false);
+      setTimeout(() => {
+        onClose();
+      }, 150);
     }
   };
 
   // Handle backdrop click
   const handleBackdropClick = () => {
-    onClose();
+    setIsClosing(true);
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 150);
   };
-
   // Handle image errors for search results
   const handleImageError = (itemId: string) => {
     setFailedImages(prev => new Set([...prev, itemId]));
@@ -270,6 +281,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
                         failedImages={failedImages}
                         getCategoryDisplayName={getCategoryDisplayName}
                         onItemClick={handleItemClick}
+                        isClosing={isClosing}
                       />
                     ))}
                   </div>
@@ -284,6 +296,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
                         failedImages={failedImages}
                         getCategoryDisplayName={getCategoryDisplayName}
                         onItemClick={handleItemClick}
+                        isClosing={isClosing}
                       />
                     ))}
                   </div>

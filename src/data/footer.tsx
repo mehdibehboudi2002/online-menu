@@ -54,14 +54,10 @@ export const footerData: FooterData = {
   ],
   businessHours: {
     en: [
-      { dayKey: 'footer.sat_wed', hours: '8:00 - 22:00' },
-      { dayKey: 'footer.thursday', hours: '10:00 - 00:00' },
-      { dayKey: 'footer.friday', hours: '10:00 - 00:00' }
+      { dayKey: 'footer.all_week', hours: '16:00 - 00:00' },
     ],
     fa: [
-      { dayKey: 'footer.sat_wed', hours: '۲۲:۰۰ - ۸:۰۰' },
-      { dayKey: 'footer.thursday', hours: '۰۰:۰۰ - ۱۰:۰۰' },
-      { dayKey: 'footer.friday', hours: '۰۰:۰۰ - ۱۰:۰۰' }
+      { dayKey: 'footer.all_week', hours: '۱۶:۰۰ - ۰۰:۰۰' },
     ]
   },
   contact: {

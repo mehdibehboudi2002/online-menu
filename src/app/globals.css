@@ -3,9 +3,33 @@
 
 /* Base font styles */
 body {
-  font-family: cursive; /* Default English cursive */
   transition: all 0.3s ease;
   overflow-x: hidden;
+}
+
+/* Mobile only - use Comic Neue */
+@media (max-width: 767px) {
+  body {
+    font-family: var(--font-cursive), cursive;
+  }
+
+  .font-cursive {
+    font-family: var(--font-cursive), cursive;
+  }
+}
+
+/* Desktop - use default cursive */
+@media (min-width: 768px) {
+  body {
+    font-family: cursive;
+  }
+
+  /* English cursive font class */
+  .font-cursive {
+    font-family: cursive;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
 }
 
 /* Theme background classes */
@@ -28,13 +52,6 @@ body {
 
 .shadow_inner_strong {
   box-shadow: inset 0 2px 6px 0 rgba(0, 0, 0, 0.15);
-}
-
-/* English cursive font class */
-.font-cursive {
-  font-family: cursive;
-  font-weight: 400;
-  letter-spacing: 0.3px;
 }
 
 /* Farsi chalkboard font class */
@@ -222,4 +239,19 @@ body {
 
 .modal-scroll-lock::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Opera */
+}
+
+/* Pulse animations */
+@keyframes pulse-opacity {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-opacity {
+  animation: pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

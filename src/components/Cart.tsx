@@ -18,7 +18,7 @@ import { OrderReceipt, ReceiptItem } from '@/types/receipt';
 export default function Cart() {
   const { t, i18n } = useTranslation();
   const dark = useSelector((state: RootState) => state.theme.dark);
-const cartItems = useSelector((state: RootState) => state.cart.items) as CartItem[];
+  const cartItems = useSelector((state: RootState) => state.cart.items) as CartItem[];
   const totalItemsCount = useSelector(selectTotalItemsInCart);
   const isComingNow = useSelector((state: RootState) => state.cart.deliveryDetails.isComingNow);
   const isSelectingTableLater = useSelector((state: RootState) => state.cart.deliveryDetails.isSelectingTableLater);
@@ -35,6 +35,8 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<OrderReceipt | null>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  const RESTAURANT_OPENING_HOUR = 16; // 4:00 PM
 
   // Function to return to cart view
   const handleReturnToCart = () => {
@@ -115,7 +117,6 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
   const formattedTotalPrice = isFarsi ? convertToFarsiNumbers(totalPrice.toLocaleString('en-US')) : totalPrice.toLocaleString('en-US');
 
   const maxDeliveryTime = Math.max(...cartItems.map(item => item.estimated_delivery_time_minutes || 0));
-
   const minEstimate = maxDeliveryTime;
   const maxEstimate = maxDeliveryTime + 5;
 
@@ -140,7 +141,7 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
     setIsProcessingPayment(true);
 
     // Prepare receipt data
-    const receiptData = {
+    const receiptData: OrderReceipt = { // Add type annotation for clarity
       items: cartItems.map(item => ({
         id: item.id,
         name_en: item.name_en,
@@ -157,24 +158,19 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
       isSelectingTableLater: isSelectingTableLater,
       minEstimate: minEstimate,
       maxEstimate: maxEstimate,
+      // --- KEY CHANGE 1: Save the exact timestamp ---
       timestamp: new Date().toISOString()
     };
 
     // Save to localStorage
     localStorage.setItem('orderReceipt', JSON.stringify(receiptData));
 
-    // Set timer to auto-remove receipt after estimated time
-    const estimatedTimeMs = maxEstimate * 60 * 1000; // Convert minutes to milliseconds
-    setTimeout(() => {
-      localStorage.removeItem('orderReceipt');
-    }, estimatedTimeMs);
-
     // Simulate payment processing
     setTimeout(() => {
       // Clear cart
       dispatch(clearCart());
 
-      // Redirect to success page
+      // Redirect to success page 
       window.location.href = '/payment-successful';
     }, 800); // Short delay for loading animation
   };
@@ -205,6 +201,11 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
       startHour = now.getHours() + hoursToAdd;
     }
 
+    // Ensure startHour doesn't go before opening time
+    if (startHour < RESTAURANT_OPENING_HOUR) {
+      startHour = RESTAURANT_OPENING_HOUR;
+    }
+
     // Generate slots until midnight
     for (let hour = startHour; hour < 24; hour++) {
       const period = hour >= 12 ? 'PM' : 'AM';
@@ -215,14 +216,48 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
     return slots;
   };
 
+  // Check if "Coming Now" option is available based on opening hours
+  const currentHour = new Date().getHours();
+  const isWithinOpeningHours = currentHour >= RESTAURANT_OPENING_HOUR; // 16:00 (4 PM) to 23:59
+  const isComingNowEnabled = isSelectingTableLater && isWithinOpeningHours;
+
   useEffect(() => {
     // Check for existing receipt on component mount
     const savedReceipt = localStorage.getItem('orderReceipt');
     if (savedReceipt) {
-      setReceiptData(JSON.parse(savedReceipt));
-      setShowReceipt(true);
+      const receipt = JSON.parse(savedReceipt) as OrderReceipt;
+
+      // Calculate expiration time
+      const createdTime = new Date(receipt.timestamp).getTime();
+
+      const estimatedTimeMs = receipt.maxEstimate * 60 * 1000; // Convert minutes to milliseconds
+      const expirationTime = createdTime + estimatedTimeMs;
+      const timeRemaining = expirationTime - new Date().getTime();
+
+      if (timeRemaining <= 0) {
+        // Receipt has expired, clear it
+        localStorage.removeItem('orderReceipt');
+        setReceiptData(null);
+        setShowReceipt(false);
+        dispatch(setCheckoutStep('cart'));
+      } else {
+        // Receipt is active, show it and set a new timeout
+        setReceiptData(receipt);
+        setShowReceipt(true);
+
+        // Set a reliable new timer that will fire on *this* component instance
+        const autoClearTimer = setTimeout(() => {
+          localStorage.removeItem('orderReceipt');
+          setReceiptData(null);
+          setShowReceipt(false);
+          dispatch(setCheckoutStep('cart'));
+        }, timeRemaining);
+
+        // Cleanup function to clear the timeout if the component unmounts
+        return () => clearTimeout(autoClearTimer);
+      }
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -251,7 +286,7 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
               <span className={`${dark ? 'text-blue-200' : 'text-green-950'}`}>
                 {t('cart.title') || 'Your Order'}
               </span>
-              {totalItemsCount > 0 && (
+              {totalItemsCount > 0 && !showReceipt && (
                 <span className={`text-sm font-normal px-2.5 py-1 rounded-full
                   ${dark ? 'bg-yellow-400 text-slate-900' : 'bg-green-100 text-green-800'}`}>
                   {isFarsi ? convertToFarsiNumbers(totalItemsCount) : totalItemsCount}
@@ -547,13 +582,13 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
 
                       {/* Coming Now Checkbox */}
                       <label className={`flex items-center gap-2 mb-4 p-3 rounded-2xl transition-colors
-                           ${dark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-100 hover:bg-gray-200'}
-                           ${!isSelectingTableLater ? 'opacity-50' : 'cursor-pointer'}`}>
+                        ${dark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-100 hover:bg-gray-200'}
+                        ${!isComingNowEnabled ? 'opacity-50' : 'cursor-pointer'}`}>
                         <input
                           type="checkbox"
                           checked={isComingNow}
                           onChange={(e) => dispatch(setComingNow(e.target.checked))}
-                          disabled={!isSelectingTableLater}
+                          disabled={!isComingNowEnabled}
                           className="size-4"
                         />
                         <div>
@@ -561,7 +596,10 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
                             {t('cart.coming_now') || "I'll come now"}
                           </span>
                           <p className={`text-xs mt-0.5 ${dark ? 'text-slate-400' : 'text-gray-600'}`}>
-                            {t('cart.coming_now_desc') || 'Within 30 minutes'}
+                            {isWithinOpeningHours
+                              ? (t('cart.coming_now_desc') || 'Within 30 minutes')
+                              : (t('cart.outside_hours') || 'Available 4 PM - 12 AM only')
+                            }
                           </p>
                         </div>
                       </label>
@@ -684,11 +722,11 @@ const cartItems = useSelector((state: RootState) => state.cart.items) as CartIte
         {/* Fixed Footer */}
         {!showReceipt && totalItemsCount > 0 && (
           <div className={`flex-shrink-0 px-4 md:px-6 ${!isFarsi ? 'pt-3 pb-11' : 'pt-1.5 pb-10'} md:py-3.5 border-t border-opacity-20 border-gray-300 bg-opacity-95 backdrop-blur-sm
-    ${dark ? 'bg-slate-800' : 'bg-white'}`}>
+            ${dark ? 'bg-slate-800' : 'bg-white'}`}>
             {currentStep === 'cart' && (
               <>
                 <div className={`flex justify-between items-center mb-4 text-sm md:text-lg font-bold
-          ${dark ? 'text-white' : 'text-gray-900'}`}>
+                  ${dark ? 'text-white' : 'text-gray-900'}`}>
                   <span className={`${isFarsi ? 'ml-2' : 'mr-2'} ${dark ? 'text-blue-200' : 'text-green-950'}`}>
                     {t('cart.total') || 'Total'}:
                   </span>

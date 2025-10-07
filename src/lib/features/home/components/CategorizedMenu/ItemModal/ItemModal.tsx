@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store/store';
 import { useDispatch } from 'react-redux';
-import { addToCart } from '@/lib/store/features/cartSlice';
+import { addToCart, decrementQuantity } from '@/lib/store/features/cartSlice';
 import { MenuItem as MenuItemType, Review, convertToFarsiNumbers, getAllergensInLanguage, unitTranslations } from '@/types/api';
 import { fetchReviews } from '@/api/menu';
 import Button from '@/components/Button';
@@ -13,7 +13,7 @@ import ReviewsTab from './ReviewsTab';
 import Line from '@/components/Line';
 import GallerySlider from '@/components/GallerySlider';
 import { useScrollLock } from '@/hooks/useScrollLock';
-import { AiOutlineClockCircle } from 'react-icons/ai';
+import { AiOutlineClockCircle, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 
 interface ItemModalProps {
   item: MenuItemType;
@@ -87,6 +87,11 @@ export default function ItemModal({
         allergens: item.allergens
       }));
     }
+  };
+
+  const handleDecrementQuantity = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(decrementQuantity(item.id));
   };
 
   const minEstimate = item.estimated_delivery_time_minutes || 0;
@@ -201,7 +206,7 @@ export default function ItemModal({
     >
       <div
         ref={modalContentRef}
-        className={`w-full ${!isInShoppingCart ? 'max-w-2xl max-h-[86vh] md:max-h-[90vh]' : 'md:max-w-[500px] max-h-[69vh] md:max-h-[79vh]'} flex flex-col overflow-hidden rounded-2xl transition-all duration-300 ease-in-out transform ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-green-100'
+        className={`w-full ${!isInShoppingCart ? 'max-w-xs sm:max-w-xl max-h-[86vh] md:max-h-[90vh]' : 'md:max-w-[500px] max-h-[69vh] md:max-h-[79vh]'} flex flex-col overflow-hidden rounded-2xl transition-all duration-300 ease-in-out transform ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-green-100'
           } ${isOpen ? 'scale-100' : 'scale-95'}`}
       >
         {/* Header */}
@@ -408,13 +413,30 @@ export default function ItemModal({
                     {item?.category ? getCategoryDisplayName(item.category) : ''}
                   </span>
                   <div className='flex items-center'>
-                    <Button text={t('menu.add_to_cart')} onClick={handleIncrementQuantity} />
-                    {/* Quantity Badge */}
-                    {itemQuantityInCart > 0 && (
-                      <div className={`wrapper bg-red-500 text-white size-8 ${!isFarsi ? 'ml-2' : 'mr-2'} rounded-full text-sm font-bold flex items-center justify-center`}>
-                        {isFarsi ? convertToFarsiNumbers(itemQuantityInCart) : itemQuantityInCart}
-                      </div>
-                    )}
+                    <div className="min-h-11 flex items-center gap-3">
+                      {itemQuantityInCart > 0 ? (
+                        <div className={`flex items-center gap-3`}>
+                          <Button onClick={handleDecrementQuantity}
+                            className={`size-4`}
+                            bgColor={`${dark ? 'bg-slate-900' : 'bg-white'}`}
+                            textColor={`${dark ? 'text-yellow-500' : 'text-green-600'}`}
+                            icon={<AiOutlineMinus className="size-3" />}
+                            optionalPaddingAndGapClasses='px-[7px] py-[13px]'
+                          />
+                          <span className={`min-w-[24px] text-center text-lg font-bold
+                            ${dark ? 'text-blue-200' : 'text-green-700'}`}>
+                            {isFarsi ? convertToFarsiNumbers(itemQuantityInCart) : itemQuantityInCart}
+                          </span>
+                          <Button onClick={handleIncrementQuantity}
+                            className={`size-4`}
+                            icon={<AiOutlinePlus className="size-3" />}
+                            optionalPaddingAndGapClasses='px-[7px] py-[13px]'
+                          />
+                        </div>
+                      ) : (
+                        <Button text={t('menu.add_to_cart')} onClick={handleIncrementQuantity} />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

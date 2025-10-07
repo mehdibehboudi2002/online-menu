@@ -579,50 +579,30 @@ const Header = ({ showOnlyPopular = false }: HeaderProps) => {
           <Line width={'100vw'} />
         </div>)}
 
-      <style jsx>{`
-      @keyframes pulse-scale {
-        0%, 100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.05);
-        }
-      }
-      .pulse-scale {
-        animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      }
-      .pulse-scale:hover {
-         animation: none;
-       }
-      `}</style>
-
       {/* Fixed Shopping Cart Button */}
-      <button
-        onClick={handleOpenCartModal}
+      <div
         className={`
-        size-10 md:size-12 fixed bottom-4 right-4 z-50
-        rounded-full 
-        ${dark
-            ? 'bg-[#ffc903] text-[#032e15] hover:bg-[#008f39]'
-            : 'bg-[#032e15] text-[#ffc903] hover:bg-[#008f39]'
+        size-10 md:size-12 fixed bottom-4 right-4 z-50 transition-all duration-500 ease-in-out transform ${showCartButton ? 'opacity-100   translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
           }
-        shadow-lg 
-        flex items-center justify-center
-        select-none transition-all duration-500 ease-in-out transform
-        ${showCartButton
-            ? 'opacity-100 translate-y-0 scale-100 pulse-scale'
-            : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
-          }
-      `}
+    `}
       >
-        <MdOutlineShoppingBag className="hidden md:block" size={24} />
-        <MdOutlineShoppingBag className="block md:hidden" size={20} />
-        {totalItemsCount > 0 && (
-          <span className="absolute -top-1 -right-1 size-4 md:size-5 text-[10px] font-bold rounded-full bg-yellow-400 text-slate-900 flex items-center justify-center pointer-events-none">
-            {totalItemsCount}
-          </span>
-        )}
-      </button>
+        <button
+          onClick={handleOpenCartModal}
+          className={`
+          w-full h-full rounded-full ${dark ? 'bg-white text-[#158f42]' : 'bg-green-700/90 text-white'} shadow-lg flex items-center justify-center select-none animate-pulse-opacity
+    `}
+        >
+          {/* Your button content here */}
+
+          <MdOutlineShoppingBag className="hidden md:block" size={24} />
+          <MdOutlineShoppingBag className="block md:hidden" size={20} />
+          {totalItemsCount > 0 && (
+            <span className="absolute -top-1 -right-1 size-4 md:size-5 text-[10px] font-bold rounded-full bg-yellow-400 text-slate-900 flex items-center justify-center pointer-events-none">
+              {totalItemsCount}
+            </span>
+          )}
+        </button>
+      </div>
 
       <CartModal
         isOpen={isCartModalOpen}

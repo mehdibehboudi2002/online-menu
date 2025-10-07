@@ -20,6 +20,7 @@ interface ItemProps {
   getCategoryDisplayName: (category: string) => string;
   onItemClick?: (item: MenuItemType) => void;
   showOnlyPopular?: boolean;
+  isClosing?: boolean;
 }
 
 // Function to construct the image URL
@@ -40,6 +41,7 @@ export default function MenuItem({
   getCategoryDisplayName,
   onItemClick,
   showOnlyPopular = false,
+  isClosing = false,
 }: ItemProps) {
   const { t, i18n } = useTranslation();
   const dark = useSelector((state: RootState) => state.theme.dark);
@@ -123,7 +125,7 @@ export default function MenuItem({
         className={`${!isFarsi ? 'min-h-[132px]' : 'min-h-[137px]'} md:hidden w-full flex items-center py-4 px-2 transition-all duration-300 cursor-pointer ${dark
           ? 'bg-slate-800/90 hover:bg-slate-700/90'
           : 'bg-white/95 hover:bg-green-50/80'
-          } ${mobileAnimationClasses}`}
+          } ${mobileAnimationClasses} ${isClosing ? 'opacity-0' : 'opacity-100'}`}
         onClick={handleItemClick}
       >
 
@@ -214,7 +216,7 @@ export default function MenuItem({
         className={`hidden md:flex flex-col group relative overflow-hidden rounded-3xl shadow-lg transition-all duration-500 transform cursor-pointer h-full ${dark
           ? 'bg-slate-800/90 border border-slate-700 backdrop-blur-sm hover:border-yellow-500'
           : 'bg-white/95 border border-green-200 backdrop-blur-sm hover:border-green-600'
-          } ${desktopAnimationClasses}`}
+          } ${desktopAnimationClasses} ${isClosing ? 'opacity-0' : 'opacity-100'}`}
         onClick={handleItemClick}
       >
         <div className="relative h-56 overflow-hidden">

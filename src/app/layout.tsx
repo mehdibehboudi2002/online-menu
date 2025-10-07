@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Comic_Neue } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import Header from "../layouts/Header/Header";
@@ -19,6 +19,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const ComicNeue = Comic_Neue({
+  variable: "--font-cursive",
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Online Menu",
   description: "A beautifully crafted online menu with Redux & Tailwind",
@@ -33,7 +40,7 @@ export default async function RootLayout({
   
   return (
     <html lang={lang} dir={lang === "fa" ? "rtl" : "ltr"}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased theme-background`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${ComicNeue.variable} antialiased theme-background`}>
         <div suppressHydrationWarning={true}>
           <Providers initialLanguage={lang}>
             <Header />
