@@ -126,26 +126,27 @@ export default function MenuItem({
           } ${mobileAnimationClasses}`}
         onClick={handleItemClick}
       >
-        <div className="size-18 rounded-lg overflow-hidden flex-shrink-0">
-          <GallerySlider
-            images={itemImages}
-            alt={isFarsi ? item.name_fa : item.name_en}
-            onImageError={handleImageError}
-            failedImages={failedImages}
-            dark={dark}
-            className="rounded-lg"
-            effect="fade"
-          />
-        </div>
 
-        <div className={`absolute top-[30px] ${!isFarsi ? 'left-[8px]' : 'right-[8px]'} z-30`}>
-          <div className={`flex items-center ${!isFarsi ? 'text-[9px]' : 'text-[8.4px]'} rounded-t-lg shadow-inner ${dark ? 'bg-slate-700/70 text-yellow-500' : 'bg-white/70 text-green-900 font-bold'} ${!isFarsi ? dark ? 'px-[3.5px]' : 'px-[1.4px]' : dark ? 'px-[2.5px]' : 'px-[1.5px]'}`}>
-            <AiOutlineClockCircle size={9} className={`${!isFarsi ? 'mr-1' : 'ml-1'}`} />
-            {!isFarsi ? minEstimate : convertToFarsiNumbers(minEstimate)} - {!isFarsi ? maxEstimate : convertToFarsiNumbers(maxEstimate)}
-            <span className={`${!isFarsi ? 'ml-1' : 'mr-1'}`}>
-              {!isFarsi ? 'min' : 'دقیقه'}
-            </span>
+        <div className='flex flex-col'>
+          <div className="size-18 rounded-lg overflow-hidden flex-shrink-0">
+            <GallerySlider
+              images={itemImages}
+              alt={isFarsi ? item.name_fa : item.name_en}
+              onImageError={handleImageError}
+              failedImages={failedImages}
+              dark={dark}
+              className="rounded-lg"
+              effect="fade"
+            />
           </div>
+
+            <div className={`w-full flex justify-center items-center ${!isFarsi ? 'text-[8px]' : 'text-[7px]'} rounded-lg shadow-inner ${dark ? 'bg-slate-700/40 text-yellow-500' : 'bg-white/70 text-green-900 font-bold'} ${!isFarsi ? dark ? 'px-[3.5px]' : 'px-[1.4px]' : dark ? 'px-[2.5px]' : 'px-[1.5px]'}`}>
+              <AiOutlineClockCircle size={9} className={`${!isFarsi ? 'mr-1' : 'ml-1'}`} />
+              {!isFarsi ? minEstimate : convertToFarsiNumbers(minEstimate)} - {!isFarsi ? maxEstimate : convertToFarsiNumbers(maxEstimate)}
+              <span className={`${!isFarsi ? 'ml-1' : 'mr-1'}`}>
+                {!isFarsi ? 'min' : 'دقیقه'}
+              </span>
+            </div>
         </div>
 
         <div className='flex justify-between items-center w-full'>

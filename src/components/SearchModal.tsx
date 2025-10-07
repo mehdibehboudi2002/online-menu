@@ -187,7 +187,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
   return (
     <>
       <div
-        className={`fixed inset-0 z-[999] flex items-start justify-center p-4 transition-opacity duration-150 overflow-y-auto ${isVisible ? 'opacity-100' : 'opacity-0'
+        className={`fixed inset-0 z-[100] flex items-start justify-center p-4 transition-opacity duration-150 overflow-y-auto ${isVisible ? 'opacity-100' : 'opacity-0'
           }`}
         style={{
           backgroundColor: dark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.5)',
@@ -269,7 +269,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
                         onImageError={handleImageError}
                         failedImages={failedImages}
                         getCategoryDisplayName={getCategoryDisplayName}
-                        onItemClick={handleItemClick} 
+                        onItemClick={handleItemClick}
                       />
                     ))}
                   </div>
@@ -283,7 +283,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSearch, da
                         onImageError={handleImageError}
                         failedImages={failedImages}
                         getCategoryDisplayName={getCategoryDisplayName}
-                        onItemClick={handleItemClick} 
+                        onItemClick={handleItemClick}
                       />
                     ))}
                   </div>
