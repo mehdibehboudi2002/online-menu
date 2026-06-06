@@ -1,157 +1,125 @@
-# 🍽️ CafeOS
+# 🍽️ CafeHubOS — Digital Restaurant Menu Platform
 
-[![Next.js](https://img.shields.io/badge/Next.js-14+-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15+-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-61dafb?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0+-38bdf8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-3ecf8e?style=for-the-badge&logo=supabase)](https://supabase.com/)
 
-> A modern, full-stack restaurant management system featuring digital menu browsing, real-time ordering, interactive table reservations, and intelligent scheduling — built with Next.js, TypeScript, and Supabase.
+> A production-ready, full-stack restaurant menu platform featuring bilingual browsing, real-time ordering, interactive table reservations, and smart scheduling — built with Next.js 15, TypeScript, and Supabase.
 
-**🔗 Live Demo:** (https://cafehubos.vercel.app/)
-**📦 Repository:** (https://github.com/mehdibehboudi2002/online-menu)
-
----
-
-## 📸 Screenshots
-
-> Add 2-3 screenshots showing:
->
-> - Menu browsing interface
-> - Cart and checkout flow
-> - Table selection interface
+**🔗 Live Demo:** https://cafehubos.vercel.app/
+**📦 Repository:** https://github.com/mehdibehboudi2002/online-menu
 
 ---
 
 ## ✨ Key Features
 
-### 🛒 **Online Ordering System**
-
+### 🛒 Online Ordering System
 - Complete cart management with real-time price calculations
 - Dynamic quantity adjustments with instant feedback
 - Estimated delivery time tracking per item
 
-### 🪑 **Interactive Table Selection**
-
-- Visual floor plan with real-time availability indicators
-- Drag-and-drop table positioning (admin feature)
+### 🪑 Interactive Table Selection
+- Visual floor plan organized by zone (Balcony, Salon) with entrance marker for spatial orientation
+- Tables differentiated by shape and size to reflect seating capacity
 - Flexible "on arrival" option for walk-in customers
 
-### ⏰ **Smart Time Scheduling**
-
+### ⏰ Smart Time Scheduling
 - Intelligent time slot availability system
 - Business hours validation
 - Conflict prevention with existing reservations
 
-### 🌐 **Bilingual Support**
-
-- Full English/Farsi (فارسی) localization
-- Automatic RTL/LTR layout switching
+### 🌐 Bilingual Support (EN / FA)
+- Full English/Farsi (فارسی) localization with `react-i18next`
+- Automatic RTL/LTR layout switching per language
 - Culturally adapted number formatting (Persian numerals)
+- Automatic language detection on first visit (browser language → cached preference)
 
-### 🎨 **Theme System**
+### 🎨 Theme System
+- System-aware dark/light mode with manual toggle
+- Persistent theme preferences across sessions
+- Smooth transitions with optimized contrast ratios
 
-- System-aware dark/light mode
-- Manual theme toggle with persistent preferences
-- Smooth transitions and optimized contrast ratios
-
-### ⭐ **Customer Reviews**
-
-- Rate and comment on menu items
+### ⭐ Customer Reviews
+- Rate and comment on individual menu items
 - Real-time review submission and display
-- Average rating calculations
+- Average rating calculations per item
 
-### 🚀 **Performance & UX**
-
-- Server-side rendering for instant page loads
-- Optimistic UI updates
-- Image lazy loading with blur placeholders
-- Intersection Observer animations
+### 🚀 Performance & UX
+- Server-side rendering (SSR) for fast initial page loads
+- Image gallery slider per menu item with multiple photos
+- Lazy loading with Intersection Observer animations
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-
-- **Framework:** Next.js 14+ (Pages Router)
+- **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript 5+
-- **UI Library:** React 18+
 - **Styling:** Tailwind CSS + SCSS Modules
 - **State Management:** Redux Toolkit
-- **Server State:** React Query (TanStack Query)
-- **Internationalization:** next-i18next
-- **Animations:** Swiper.js, Framer Motion
+- **Server State & Caching:** React Query (TanStack Query)
+- **Internationalization:** react-i18next
+- **Animations & Sliders:** Swiper.js, Framer Motion
 
 ### Backend & Data
+- **API Layer:** Custom Next.js API Routes (100% custom business logic)
+- **Database:** Supabase (PostgreSQL) with Row Level Security (RLS)
+- **Storage:** Supabase Storage for image hosting
+- **Real-time:** Supabase Realtime subscriptions
 
-- **Backend Logic**: 100% Custom implementation using Next.js API Routes
-- **Database**: Supabase (PostgreSQL) for data persistence
-- **Storage**: Supabase Storage (image hosting)
-- **Authentication**: Row Level Security (RLS) policies enforced on the database layer
-- **Real-time**: Supabase Realtime subscriptions for live data updates
-
-### DevOps & Tools
-
-- **Version Control:** Git & GitHub
-- **Package Manager:** npm
-- **Code Quality:** ESLint, Prettier
-- **Type Checking:** TypeScript strict mode
-
----
+### DevOps & Tooling
+- **Deployment:** Vercel (CI/CD via GitHub integration)
+- **Version Control:** Git & GitHub (conventional commits)
+- **Code Quality:** ESLint, Prettier, TypeScript strict mode
 
 ---
 
 ## 🏗️ Architecture Highlights
 
-- **Hybrid Rendering:** Server-Side Rendering (SSR) for initial page loads + Client-Side Rendering (CSR) for dynamic interactions
-  API Routes: Custom-built Next.js API routes for handling all business logic, data fetching, and mutations against the Supabase database.- **State Management:** Redux Toolkit for client state, React Query for server state caching
-- **Type Safety:** End-to-end TypeScript coverage from database to UI components
+- **Hybrid Rendering:** SSR for initial page loads, CSR for dynamic interactions
+- **Custom API Layer:** All business logic handled through Next.js API Routes — Supabase is never called directly from the client for mutations
+- **Layered State:** Redux Toolkit for UI/cart state, React Query for server state caching and invalidation
+- **Type Safety:** End-to-end TypeScript coverage from database schema to UI components
+- **Security:** Row Level Security policies enforced at the database layer — public read, controlled write
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
 - Node.js 18+ and npm
 - A Supabase account (free tier works)
 
 ### Installation
 
-1️⃣ **Clone the repository**
-
+**1. Clone the repository**
 ```bash
 git clone https://github.com/mehdibehboudi2002/online-menu.git
 cd online-menu
 ```
 
-2️⃣ **Install dependencies**
-
+**2. Install dependencies**
 ```bash
 npm install
 ```
 
-3️⃣ **Configure environment variables**
-
+**3. Configure environment variables**
 ```bash
-# Copy the example file
-cp .env.local.example .env.local
-
-# Edit .env.local and add your Supabase credentials
-# Get them from: https://supabase.com/dashboard/project/_/settings/api
+cp .example.local .env.local
 ```
 
-Your `.env.local` should look like:
-
+Your `.env.local` should contain:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-4️⃣ **Set up Supabase database**
+**4. Set up the Supabase database**
 
-Go to your Supabase SQL Editor and run:
+Run the following in your Supabase SQL Editor:
 
 ```sql
 -- Create MenuItems table
@@ -166,7 +134,7 @@ CREATE TABLE "MenuItems" (
   price_fa TEXT NOT NULL,
   images TEXT[] DEFAULT '{}',
   nutritional_info JSONB,
-  allergens TEXT[],
+  allergens JSONB,
   is_popular BOOLEAN DEFAULT false,
   estimated_delivery_time_minutes INTEGER DEFAULT 30,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -186,35 +154,17 @@ CREATE TABLE "Reviews" (
 ALTER TABLE "MenuItems" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Reviews" ENABLE ROW LEVEL SECURITY;
 
--- Public read access for MenuItems
-CREATE POLICY "Public read MenuItems"
-  ON "MenuItems" FOR SELECT
-  TO public
-  USING (true);
-
--- Public read access for Reviews
-CREATE POLICY "Public read Reviews"
-  ON "Reviews" FOR SELECT
-  TO public
-  USING (true);
-
--- Public insert access for Reviews
-CREATE POLICY "Public insert Reviews"
-  ON "Reviews" FOR INSERT
-  TO public
-  WITH CHECK (true);
+-- Public read access
+CREATE POLICY "Public read MenuItems" ON "MenuItems" FOR SELECT TO public USING (true);
+CREATE POLICY "Public read Reviews" ON "Reviews" FOR SELECT TO public USING (true);
+CREATE POLICY "Public insert Reviews" ON "Reviews" FOR INSERT TO public WITH CHECK (true);
 ```
 
-5️⃣ **Create storage bucket for images**
+**5. Create Supabase Storage bucket**
 
-In Supabase Dashboard:
+In your Supabase Dashboard → Storage → create a public bucket named `public_images`. Upload menu images under the path `images/menu/`.
 
-- Go to Storage
-- Create a new bucket named `public_images`
-- Make it **public**
-
-6️⃣ **Run the development server**
-
+**6. Run the development server**
 ```bash
 npm run dev
 ```
@@ -225,68 +175,32 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 
 ## 🎯 How It Works
 
-1. **Browse Menu** → Explore items by category with bilingual descriptions
+1. **Browse Menu** → Explore items by category with bilingual descriptions and image galleries
 2. **Add to Cart** → Select quantities with real-time price updates
 3. **Choose Table** → Pick from an interactive floor plan or select "on arrival"
 4. **Schedule Time** → Book your arrival time with smart availability checking
-5. **Review Order** → Confirm details and proceed to checkout
-6. **Payment** → Complete order (demo flow - ready for payment gateway integration)
+5. **Review Order** → Confirm details before checkout
+6. **Leave a Review** → Rate and comment on items after your experience
 
 ---
 
 ## 🔮 Roadmap
 
-### Phase 1: Current Features ✅
+### Phase 1 — Completed ✅
+- [x] Menu browsing with search and category filters
+- [x] Cart management with quantity controls
+- [x] Table selection with floor plan UI
+- [x] Time scheduling with conflict prevention
+- [x] Customer reviews system
+- [x] Bilingual support (EN/FA) with RTL/LTR switching
+- [x] Dark/Light theme with persistence
 
-- [x] Menu browsing with search and filters
-- [x] Cart management
-- [x] Table selection
-- [x] Time scheduling
-- [x] Reviews system
-- [x] Bilingual support (EN/FA)
-- [x] Dark/Light themes
-
-### Phase 2: Upcoming Features 🚧
-
-- [ ] **Admin Dashboard** - Menu management, order tracking, analytics
-- [ ] **User Authentication** - Sign up, login, order history
-- [ ] **Payment Integration** - Stripe/PayPal/local payment gateways
-- [ ] **Order Tracking** - Real-time order status updates
-- [ ] **Docker Containerization** - Easy deployment
-
----
-
-## 🧪 Testing
-
-```bash
-# Run tests (coming soon)
-npm test
-
-# Run linting
-npm run lint
-
-# Type checking
-npm run type-check
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
-
-Please ensure your code:
-
-- Follows the existing code style
-- Includes TypeScript types
-- Is properly formatted (Prettier)
-- Passes linting (ESLint)
+### Phase 2 — Planned 🚧
+- [ ] Admin Dashboard — menu management, order tracking, analytics
+- [ ] User Authentication — sign up, login, order history
+- [ ] Payment Integration — ready for Stripe or local gateway
+- [ ] Real-time Order Tracking
+- [ ] Docker support for self-hosted deployment
 
 ---
 
@@ -298,37 +212,14 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 👨‍💻 About the Developer
 
-**Mehdi Behboudi**  
-Frontend Developer specializing in React & Next.js with hands-on backend development experience
+**Mehdi Behboudi** — Frontend Developer with 3 years of professional experience, specializing in React and Next.js ecosystems with hands-on full-stack exposure.
 
-This project demonstrates expertise in:
+Previously built production systems at a big data company (Vue.js dashboard builder, shared React component library with Storybook), a Canadian car dealership platform (data migration scripts, legacy refactoring), and a food delivery platform (client-side, admin panel, form validation architecture).
 
-- 🏗️ Scalable architecture design with custom API development
-- 🔒 Type-safe development with TypeScript
-- 🎨 Modern UI/UX implementation
-- 🌍 Internationalization (i18n)
-- 📊 State management patterns
-- 🔄 Real-time data synchronization
-- ♿ Accessibility best practices
-- 📱 Responsive design principles
-
-### 📫 Connect With Me
-
-- 📧 Email: [mehdi061280@gmail.com](mailto:mehdi061280@gmail.com)
-- 🐱 GitHub: [@mehdibehboudi2002](https://github.com/mehdibehboudi2002)
+### 📫 Connect
+- 📧 [mehdi061280@gmail.com](mailto:mehdi061280@gmail.com)
+- 🐱 [@mehdibehboudi2002](https://github.com/mehdibehboudi2002)
 
 ---
 
-### Acknowledgments
-
-Supabase - Provider for PostgreSQL Database and Storage
-
-- [Next.js](https://nextjs.org/) - The React framework
-- [Supabase](https://supabase.com/) - Backend as a service
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
-- [Redux Toolkit](https://redux-toolkit.js.org/) - State management
-- [Lucide Icons](https://lucide.dev/) - Beautiful icon set
-
----
-
-Made by Mehdi Behboudi
+*Built with Next.js · Supabase · Redux Toolkit · Tailwind CSS · TypeScript*
